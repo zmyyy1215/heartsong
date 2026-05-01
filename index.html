@@ -71,97 +71,101 @@
   }
   .subtitle { font-size: 13px; color: #7a5a7a; margin-bottom: 28px; text-align: center; }
 
-  /* ========== 心情泡泡格子区 ========== */
+  /* ========== 心情泡泡区 ========== */
   .mood-grid {
     width: 100%; max-width: 440px;
     display: flex; flex-wrap: wrap; justify-content: center;
     align-items: center; align-content: center;
-    gap: 10px; padding: 12px 4px; margin-bottom: 16px;
-    min-height: 200px; position: relative;
+    gap: 10px 12px; padding: 16px 4px; margin-bottom: 18px;
+    min-height: 200px;
   }
+
+  /* ---- 圆形水晶泡泡 ---- */
   .mood-btn {
-    border: 1.5px solid rgba(255,255,255,0.45);
-    border-radius: 20px;
-    background: rgba(255,255,255,0.35);
-    backdrop-filter: blur(14px);
-    -webkit-backdrop-filter: blur(14px);
-    color: #4a2040; font-weight: 500;
-    white-space: nowrap; cursor: pointer;
+    position: relative;
+    width: 76px; height: 76px;
+    border-radius: 50%;
+    border: 1.5px solid rgba(255,255,255,0.5);
+    background: rgba(255,255,255,0.25);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    color: #4a2040; font-size: 13px; font-weight: 500;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    gap: 2px; line-height: 1;
+    cursor: pointer;
     box-shadow:
-      0 4px 16px rgba(100,40,80,0.08),
-      inset 0 1px 0 rgba(255,255,255,0.5);
+      0 4px 14px rgba(100,40,80,0.08),
+      inset 0 1px 2px rgba(255,255,255,0.55);
     -webkit-tap-highlight-color: transparent;
-    transition: all 0.55s cubic-bezier(0.34, 1.56, 0.64, 1);
+    will-change: transform, opacity;
+    transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1),
+                opacity 0.4s ease,
+                box-shadow 0.4s ease,
+                background 0.4s ease,
+                border-color 0.4s ease;
   }
-  /* ---- 大小交错 ---- */
-  .mood-btn:nth-child(3n+1) { padding: 10px 16px; font-size: 13px; }
-  .mood-btn:nth-child(3n+2) { padding: 12px 20px; font-size: 15px; }
-  .mood-btn:nth-child(3n+3) { padding: 10px 18px; font-size: 14px; }
-  .mood-btn:nth-child(1)  { padding: 14px 22px; font-size: 16px; }
-  .mood-btn:nth-child(7)  { padding: 14px 22px; font-size: 16px; }
-  .mood-btn:nth-child(13) { padding: 14px 24px; font-size: 16px; }
-  .mood-btn:nth-child(14) { padding: 14px 22px; font-size: 16px; }
-  .mood-btn:nth-child(15) { padding: 14px 24px; font-size: 16px; }
+  /* 玻璃高光 */
+  .mood-btn::before {
+    content: ""; position: absolute; top: 8px; left: 14px;
+    width: 20px; height: 12px; border-radius: 50%;
+    background: rgba(255,255,255,0.55);
+    transform: rotate(-25deg); pointer-events: none;
+  }
 
-  /* ---- 泡泡挤来挤去动画 ---- */
-  @keyframes jostleA {
-    0%, 100% { transform: translate(0, 0); }
-    20% { transform: translate(5px, -5px); }
-    50% { transform: translate(-4px, 4px); }
-    75% { transform: translate(3px, 2px); }
-  }
-  @keyframes jostleB {
-    0%, 100% { transform: translate(0, 0); }
-    30% { transform: translate(-5px, -3px); }
-    55% { transform: translate(4px, 5px); }
-    80% { transform: translate(-2px, -4px); }
-  }
-  @keyframes jostleC {
-    0%, 100% { transform: translate(0, 0); }
-    25% { transform: translate(-4px, 5px); }
-    45% { transform: translate(5px, -3px); }
-    70% { transform: translate(-3px, -4px); }
-  }
-  .mood-btn:nth-child(5n+1) { animation: jostleA 4.2s ease-in-out infinite; }
-  .mood-btn:nth-child(5n+2) { animation: jostleB 4.8s ease-in-out infinite; animation-delay: 0.5s; }
-  .mood-btn:nth-child(5n+3) { animation: jostleC 4.0s ease-in-out infinite; animation-delay: 1.0s; }
-  .mood-btn:nth-child(5n+4) { animation: jostleA 5.0s ease-in-out infinite; animation-delay: 0.3s; }
-  .mood-btn:nth-child(5n+5) { animation: jostleB 3.8s ease-in-out infinite; animation-delay: 0.8s; }
+  /* ---- 大小不一 ---- */
+  .mood-btn:nth-child(3n+1) { width: 72px; height: 72px; font-size: 12px; }
+  .mood-btn:nth-child(3n+3) { width: 82px; height: 82px; font-size: 14px; }
+  .mood-btn:nth-child(1)  { width: 90px; height: 90px; font-size: 15px; }
+  .mood-btn:nth-child(7)  { width: 88px; height: 88px; font-size: 15px; }
+  .mood-btn:nth-child(13) { width: 90px; height: 90px; font-size: 15px; }
+  .mood-btn:nth-child(14) { width: 88px; height: 88px; font-size: 15px; }
+  .mood-btn:nth-child(15) { width: 90px; height: 90px; font-size: 15px; }
 
-  .mood-btn:active { transform: scale(0.85); transition: transform 0.1s ease; }
+  /* ---- 漂浮动画 ---- */
+  @keyframes bubbleFloat {
+    0%, 100% { transform: translateY(0); }
+    35%  { transform: translateY(-7px); }
+    70%  { transform: translateY(3px); }
+  }
+  .mood-btn:nth-child(4n+1) { animation: bubbleFloat 5.0s ease-in-out infinite; }
+  .mood-btn:nth-child(4n+2) { animation: bubbleFloat 5.6s ease-in-out infinite; animation-delay: 1.2s; }
+  .mood-btn:nth-child(4n+3) { animation: bubbleFloat 4.6s ease-in-out infinite; animation-delay: 2.6s; }
+  .mood-btn:nth-child(4n+4) { animation: bubbleFloat 5.3s ease-in-out infinite; animation-delay: 3.8s; }
+  /* 个别微调让节奏更散 */
+  .mood-btn:nth-child(2)  { animation-duration: 4.8s; }
+  .mood-btn:nth-child(6)  { animation-duration: 5.8s; }
+  .mood-btn:nth-child(10) { animation-duration: 4.4s; }
+  .mood-btn:nth-child(14) { animation-duration: 5.2s; }
 
-  /* ---- 选中态：飘到中心，独占一行，放大发光 ---- */
+  /* ---- 点击回弹 ---- */
+  .mood-btn:active { transform: scale(0.88); transition: transform 0.12s ease; }
+
+  /* ---- 选中态：放大 + 发光 ---- */
   .mood-btn.active {
-    order: -1 !important;
-    flex-basis: 100%;
-    align-self: center;
-    padding: 16px 32px !important;
-    font-size: 18px !important;
-    border-radius: 28px;
-    background: rgba(180, 100, 160, 0.85);
+    transform: scale(1.2);
+    background: rgba(195, 115, 170, 0.75);
     color: #fff;
-    border-color: rgba(255,255,255,0.75);
+    border-color: rgba(255,255,255,0.72);
     box-shadow:
-      0 0 36px rgba(180,100,160,0.5),
-      0 0 0 6px rgba(180,100,160,0.2),
-      0 8px 24px rgba(100,40,80,0.3),
-      inset 0 1px 0 rgba(255,255,255,0.5);
-    transform: scale(1.08);
-    z-index: 10;
-    animation: pulseGlow 2s ease-in-out infinite;
-    font-weight: 700; letter-spacing: 1px;
+      0 0 28px rgba(180,100,160,0.45),
+      0 0 0 5px rgba(180,100,160,0.18),
+      inset 0 1px 2px rgba(255,255,255,0.55);
+    z-index: 5;
+    animation: activePulse 2.2s ease-in-out infinite;
+    font-weight: 700;
   }
-  @keyframes pulseGlow {
-    0%, 100% { box-shadow: 0 0 36px rgba(180,100,160,0.5), 0 0 0 6px rgba(180,100,160,0.2), 0 8px 24px rgba(100,40,80,0.3); }
-    50% { box-shadow: 0 0 56px rgba(200,120,180,0.7), 0 0 0 10px rgba(180,100,160,0.35), 0 8px 32px rgba(100,40,80,0.4); }
+  @keyframes activePulse {
+    0%, 100% { box-shadow: 0 0 28px rgba(180,100,160,0.45), 0 0 0 5px rgba(180,100,160,0.18), inset 0 1px 2px rgba(255,255,255,0.55); }
+    50% { box-shadow: 0 0 44px rgba(200,120,180,0.6), 0 0 0 9px rgba(180,100,160,0.3), inset 0 1px 2px rgba(255,255,255,0.55); }
   }
 
-  /* ---- 其他泡泡退到四周 ---- */
+  /* ---- 其他泡泡收拢 ---- */
   .mood-grid.has-active .mood-btn:not(.active) {
-    transform: scale(0.75);
-    opacity: 0.35;
-    filter: blur(1.5px) saturate(0.5);
-    transition: all 0.55s cubic-bezier(0.34, 1.56, 0.64, 1);
+    transform: scale(0.82);
+    opacity: 0.4;
+    transition: transform 0.45s cubic-bezier(0.34, 1.56, 0.64, 1),
+                opacity 0.45s ease;
   }
 
   /* ========== 唱片区 ========== */
@@ -249,8 +253,13 @@
     .disc-wrapper { width: 160px; height: 160px; }
     .disc { width: 144px; height: 144px; }
     .disc-label { width: 48px; height: 48px; font-size: 11px; }
-    .mood-grid { gap: 8px; }
-    .mood-btn { padding: 8px 14px !important; font-size: 13px !important; }
+    .mood-grid { gap: 6px 8px; }
+    .mood-btn { width: 62px !important; height: 62px !important; font-size: 11px !important; }
+    .mood-btn:nth-child(1),
+    .mood-btn:nth-child(7),
+    .mood-btn:nth-child(13),
+    .mood-btn:nth-child(14),
+    .mood-btn:nth-child(15) { width: 72px !important; height: 72px !important; font-size: 13px !important; }
   }
 </style>
 </head>
