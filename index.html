@@ -99,6 +99,8 @@
   .mood-btn:nth-child(1)  { padding: 14px 22px; font-size: 16px; }
   .mood-btn:nth-child(7)  { padding: 14px 22px; font-size: 16px; }
   .mood-btn:nth-child(13) { padding: 14px 24px; font-size: 16px; }
+  .mood-btn:nth-child(14) { padding: 14px 22px; font-size: 16px; }
+  .mood-btn:nth-child(15) { padding: 14px 24px; font-size: 16px; }
 
   @keyframes crystalFloat {
     0%, 100% { transform: translateY(0) scale(1); }
@@ -117,6 +119,8 @@
   .mood-btn:nth-child(11) { animation-delay: 0.2s; animation-duration: 4.0s; }
   .mood-btn:nth-child(12) { animation-delay: 0.6s; animation-duration: 3.4s; }
   .mood-btn:nth-child(13) { animation-delay: 1.0s; animation-duration: 4.5s; }
+  .mood-btn:nth-child(14) { animation-delay: 0.25s; animation-duration: 4.0s; }
+  .mood-btn:nth-child(15) { animation-delay: 0.85s; animation-duration: 3.8s; }
 
   .mood-btn:active { transform: scale(0.92); transition: transform 0.12s ease; }
 
@@ -262,6 +266,8 @@
     <button class="mood-btn" data-mood="special"   >🎂 特别日</button>
     <button class="mood-btn" data-mood="insomnia"  >💤 失眠</button>
     <button class="mood-btn" data-mood="random"    >🎲 随机</button>
+    <button class="mood-btn" data-mood="slacking" >🐟 摸鱼中</button>
+    <button class="mood-btn" data-mood="offwork"  >🎉 下班啦</button>
   </div>
 
   <!-- 唱片 - 纯 CSS 绘制 -->
@@ -451,6 +457,26 @@
         whisper: "失眠是因为心里装着太多事。试着放下一些，很久以后你会感谢今晚的这份放松。" },
       { file: "music/allaboutu.mp3",          song: "All About U",
         whisper: "夜深了，所有的思绪都是关于你。那就让这首歌陪你入睡吧，晚安。" }
+    ],
+
+    /* ------ 🐟 摸鱼中 ------ */
+    slacking: [
+      { file: "music/chabuduo.mp3",           song: "差不多姑娘",
+        whisper: "摸鱼也是一种生产力！偶尔放空自己，给大脑充充电，等一下效率更高。" },
+      { file: "music/tonghua.mp3",            song: "另一个童话",
+        whisper: "偷偷摸个鱼，躲进属于自己的童话世界。几分钟而已，老板不会发现的。" },
+      { file: "music/chaonengli.mp3",         song: "超能力",
+        whisper: "摸鱼的时候最适合幻想——要是真有超能力，第一件事就是让时间暂停，再摸一会儿。" }
+    ],
+
+    /* ------ 🎉 下班啦 ------ */
+    offwork: [
+      { file: "music/xindexintiao.mp3",       song: "新的心跳",
+        whisper: "下班这一刻，心跳都是自由的。把今天的辛苦关在门外，剩下的时间都是你的。" },
+      { file: "music/haoxiang.mp3",           song: "好想好想你",
+        whisper: "下班了，终于可以不用想工作了。接下来的时间，好好享受属于你的夜晚吧。" },
+      { file: "music/daoshu.mp3",             song: "倒数",
+        whisper: "倒数三二一，告别今日的忙碌。今天的你也辛苦啦，值得一首好歌。" }
     ]
   };
 
