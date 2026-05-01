@@ -115,7 +115,6 @@
       inset 0 1px 2px rgba(255,255,255,0.5),
       inset 0 -2px 4px rgba(0,0,0,0.06);
     -webkit-tap-highlight-color: transparent;
-    will-change: transform, opacity;
     transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1),
                 opacity 0.4s ease, box-shadow 0.4s ease,
                 background 0.4s ease, border-color 0.4s ease;
@@ -187,38 +186,35 @@
     50% { box-shadow: 0 0 50px rgba(160,210,245,0.65), 0 0 0 10px rgba(130,190,230,0.38); }
   }
 
-  /* ========== 碎裂动画（纯 opacity + scale，GPU友好） ========== */
-  @keyframes shatter {
-    0%   { transform: scale(1); opacity: 1; }
-    40%  { transform: scale(1.03); opacity: 0.8; }
-    100% { transform: scale(0.25); opacity: 0; }
-  }
+  /* ========== 碎裂：停止漂浮 → 缩小淡出（transition，非keyframe） ========== */
   .mood-btn.shattering {
-    animation: shatter 1.3s ease-out forwards !important;
+    animation: none !important;
+    transition: transform 1.5s cubic-bezier(0.25, 0, 0, 1), opacity 1.5s ease-out;
+    transform: scale(0.15);
+    opacity: 0;
     pointer-events: none;
   }
 
-  /* 选中泡泡缓缓放大消散 */
-  @keyframes bubbleExpand {
-    0%   { transform: scale(1); opacity: 1; }
-    25%  { transform: scale(1.4); opacity: 1; }
-    55%  { transform: scale(2.8); opacity: 0.7; }
-    100% { transform: scale(5); opacity: 0; }
-  }
+  /* ========== 选中泡泡放大消散（transition，匀速3秒） ========== */
   .mood-btn.expanding {
-    animation: bubbleExpand 2.0s ease-out forwards !important;
+    animation: none !important;
+    transition: transform 3s linear, opacity 3s linear,
+                box-shadow 3s linear, background 3s linear,
+                border-color 3s linear;
+    transform: scale(4.5);
+    opacity: 0;
     pointer-events: none;
     background: linear-gradient(135deg,
-      rgba(140,200,235,0.35),
-      rgba(110,180,225,0.3),
-      rgba(160,220,245,0.35),
-      rgba(130,195,230,0.3)
+      rgba(150,210,245,0.5),
+      rgba(120,190,235,0.45),
+      rgba(170,225,250,0.5),
+      rgba(140,205,240,0.45)
     );
-    border-color: rgba(180,220,245,0.45);
+    border-color: rgba(190,225,250,0.5);
     box-shadow:
-      0 0 60px rgba(140,200,235,0.4),
-      0 0 120px rgba(130,190,225,0.25),
-      0 20px 60px rgba(100,160,210,0.2);
+      0 0 80px rgba(150,210,245,0.5),
+      0 0 160px rgba(140,200,235,0.3),
+      0 30px 80px rgba(120,180,220,0.25);
   }
 
   /* ========== 播放面板（初始隐藏，覆盖在舞台上方） ========== */
@@ -612,18 +608,18 @@
         if (b !== btn) b.classList.add("shattering");
       });
 
-      // Step 2: 选中泡泡放大 (等碎裂跑差不多)
+      // Step 2: 选中泡泡缓缓放大 (等碎裂即将结束时)
       setTimeout(function() {
         btn.classList.remove("active");
         btn.classList.add("expanding");
 
-        // 放大中途淡出网格
+        // 放大到中段再淡出网格
         setTimeout(function() {
           moodGrid.classList.add("fading");
-        }, 1400);
-      }, 1100);
+        }, 1800);
+      }, 1400);
 
-      // Step 3: 显示播放面板 (等放大完整结束)
+      // Step 3: 播放面板浮现 (等放大完整结束)
       setTimeout(function() {
         playerPanel.classList.add("revealed");
 
@@ -648,7 +644,7 @@
         }
 
         isTransitioning = false;
-      }, 3200);
+      }, 4500);
     });
   });
 
