@@ -10,8 +10,11 @@
   body {
     font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
     min-height: 100vh; min-height: 100dvh;
-    background: linear-gradient(135deg, #0d0b1e, #1a1235, #1f1840, #251a4a, #0d0b1e);
-    background-size: 500% 500%;
+    background: linear-gradient(135deg,
+      #c9a7eb, #dbb8de, #f0c6d2, #fad0c4, #f0d0e8,
+      #d4b8e8, #e8c4d8, #c9a7eb
+    );
+    background-size: 600% 600%;
     animation: bgFlow 20s ease infinite;
     background-attachment: fixed;
     display: flex; flex-direction: column; align-items: center;
@@ -41,8 +44,8 @@
     0%, 100% { transform: translateY(0); }
     50% { transform: translateY(-10px); }
   }
-  .overlay-text { color: #e8e0f0; font-size: 20px; font-weight: 600; letter-spacing: 2px; text-align: center; line-height: 1.6; }
-  .overlay-sub  { color: rgba(232,224,240,0.6); font-size: 14px; margin-top: 8px; }
+  .overlay-text { color: #fff; font-size: 20px; font-weight: 600; letter-spacing: 2px; text-align: center; line-height: 1.6; }
+  .overlay-sub  { color: rgba(255,255,255,0.7); font-size: 14px; margin-top: 8px; }
 
   /* ========== 主容器 ========== */
   .container {
@@ -52,37 +55,44 @@
   }
 
   /* ========== 标题 ========== */
-  .title { font-size: 26px; font-weight: 700; color: #e0d8f0; text-align: center; margin-bottom: 6px; letter-spacing: 1px; }
-  .subtitle { font-size: 13px; color: #9a8ab8; margin-bottom: 24px; text-align: center; }
+  .title { font-size: 26px; font-weight: 700; color: #4a2040; text-align: center; margin-bottom: 6px; letter-spacing: 1px; }
+  .subtitle { font-size: 13px; color: #7a5a7a; margin-bottom: 20px; text-align: center; }
+
+  /* ========== 舞台：泡泡和播放面板共享位置 ========== */
+  .stage {
+    width: 100%; max-width: 440px;
+    position: relative;
+    min-height: 280px;
+    display: flex; align-items: center; justify-content: center;
+  }
 
   /* ========== 心情泡泡区 ========== */
   .mood-grid {
-    width: 100%; max-width: 440px;
+    width: 100%;
     display: flex; flex-wrap: wrap; justify-content: center;
     align-items: center; align-content: center;
-    gap: 12px 14px; padding: 10px 4px; margin-bottom: 20px;
-    min-height: 220px; position: relative;
-    transition: opacity 0.3s ease;
+    gap: 12px 14px; padding: 10px 4px;
+    transition: opacity 0.35s ease, transform 0.35s ease;
   }
-  .mood-grid.fading { opacity: 0; pointer-events: none; }
+  .mood-grid.fading { opacity: 0; transform: scale(0.9); pointer-events: none; }
 
   /* 圆形泡泡 */
   .mood-btn {
     position: relative;
     width: 80px; height: 80px; border-radius: 50%;
-    border: 1.5px solid rgba(255,255,255,0.28);
-    background: rgba(255,255,255,0.1);
+    border: 1.5px solid rgba(255,255,255,0.45);
+    background: rgba(255,255,255,0.3);
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
-    color: #d8d0e8; font-size: 13px; font-weight: 500;
+    color: #4a2040; font-size: 13px; font-weight: 500;
     display: flex; flex-direction: column;
     align-items: center; justify-content: center;
     gap: 2px; line-height: 1;
     cursor: pointer;
     box-shadow:
-      0 3px 12px rgba(0,0,0,0.2),
-      inset 0 1px 2px rgba(255,255,255,0.25),
-      inset 0 -2px 4px rgba(0,0,0,0.1);
+      0 3px 12px rgba(100,40,80,0.1),
+      inset 0 1px 2px rgba(255,255,255,0.5),
+      inset 0 -2px 4px rgba(0,0,0,0.06);
     -webkit-tap-highlight-color: transparent;
     will-change: transform, opacity;
     transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1),
@@ -173,12 +183,13 @@
     border-color: rgba(255,215,100,0.5);
   }
 
-  /* ========== 播放面板（初始隐藏） ========== */
+  /* ========== 播放面板（初始隐藏，覆盖在舞台上方） ========== */
   .player-panel {
+    position: absolute; top: 0; left: 0; right: 0;
     display: flex; flex-direction: column; align-items: center;
-    opacity: 0; transform: translateY(30px) scale(0.9);
+    opacity: 0; transform: translateY(20px) scale(0.92);
     transition: all 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
-    pointer-events: none; width: 100%;
+    pointer-events: none; padding-top: 0;
   }
   .player-panel.revealed {
     opacity: 1; transform: translateY(0) scale(1);
@@ -220,21 +231,20 @@
 
   /* 歌名 */
   .song-name {
-    font-size: 18px; font-weight: 700; color: #e0d8f0;
+    font-size: 17px; font-weight: 700; color: #4a2040;
     margin-bottom: 8px; min-height: 24px; text-align: center;
     transition: opacity 0.4s;
   }
 
   /* 悄悄话 */
   .whisper-box {
-    background: rgba(255,255,255,0.08);
-    backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
-    border: 1px solid rgba(255,255,255,0.12);
+    background: rgba(255,255,255,0.45);
+    backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
     border-radius: 16px; padding: 18px 22px;
     max-width: 380px; width: 100%; min-height: 60px;
-    text-align: center; color: #c8c0d8; font-size: 15px;
+    text-align: center; color: #4a2040; font-size: 15px;
     line-height: 1.7; letter-spacing: 0.5px;
-    box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+    box-shadow: 0 4px 16px rgba(0,0,0,0.06);
     opacity: 0; transform: translateY(10px);
     transition: opacity 0.6s ease, transform 0.6s ease;
   }
@@ -242,23 +252,22 @@
 
   /* 倒带按钮 */
   .rewind-btn {
-    margin-top: 20px;
-    width: 48px; height: 48px; border-radius: 50%;
-    border: 1.5px solid rgba(255,255,255,0.25);
-    background: rgba(255,255,255,0.1);
+    margin-top: 18px;
+    width: 44px; height: 44px; border-radius: 50%;
+    border: 1.5px solid rgba(255,255,255,0.4);
+    background: rgba(255,255,255,0.35);
     backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
-    color: #c8c0d8; font-size: 20px;
+    color: #4a2040; font-size: 18px;
     display: flex; align-items: center; justify-content: center;
     cursor: pointer; transition: all 0.3s ease;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
     -webkit-tap-highlight-color: transparent;
   }
-  .rewind-btn:active { transform: scale(0.9); background: rgba(255,255,255,0.2); }
-  .rewind-btn:hover { border-color: rgba(255,255,255,0.45); }
+  .rewind-btn:active { transform: scale(0.9); background: rgba(255,255,255,0.55); }
 
   /* 底部 */
   .footer {
-    margin-top: 28px; color: rgba(200,192,220,0.4);
+    margin-top: 24px; color: rgba(74,32,64,0.45);
     font-size: 12px; letter-spacing: 1px; text-align: center;
   }
 
@@ -286,8 +295,10 @@
   <div class="title">🎶 打开我的留声机</div>
   <div class="subtitle">选一个心情，让我为你唱歌</div>
 
-  <!-- 泡泡区 -->
-  <div class="mood-grid" id="moodGrid">
+  <!-- 舞台区：泡泡和播放面板共享位置 -->
+  <div class="stage">
+    <!-- 泡泡区 -->
+    <div class="mood-grid" id="moodGrid">
     <button class="mood-btn" data-mood="tired"     >🌙<br>有点累</button>
     <button class="mood-btn" data-mood="miss"      >💭<br>很想你</button>
     <button class="mood-btn" data-mood="courage"   >✨<br>要勇气</button>
@@ -316,6 +327,7 @@
     <div class="whisper-box" id="whisper"></div>
     <button class="rewind-btn" id="rewindBtn" title="倒带返回">⏪</button>
   </div>
+  </div><!-- /stage -->
 
   <div class="footer">把耳朵借我几分钟，就给你听。</div>
 </div>
