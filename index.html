@@ -142,45 +142,47 @@
 
   .mood-btn:active { transform: scale(0.88); transition: transform 0.1s ease; }
 
-  /* 选中态：金色发光 */
+  /* 选中态：浅蓝渐变发光 */
   .mood-btn.active {
-    background: rgba(200, 160, 80, 0.6);
-    color: #fff; border-color: rgba(255,215,100,0.6);
+    background: linear-gradient(135deg, rgba(140,200,235,0.55), rgba(100,170,220,0.5), rgba(160,215,245,0.55));
+    color: #fff; border-color: rgba(180,220,245,0.65);
     box-shadow:
-      0 0 30px rgba(220,180,80,0.45),
-      0 0 0 5px rgba(200,160,80,0.2),
-      inset 0 1px 2px rgba(255,255,255,0.4);
+      0 0 30px rgba(130,190,230,0.5),
+      0 0 0 5px rgba(130,190,230,0.22),
+      inset 0 1px 2px rgba(255,255,255,0.45);
     transform: scale(1.15); z-index: 5;
     animation: activeGlow 2s ease-in-out infinite;
     font-weight: 700;
   }
   @keyframes activeGlow {
-    0%, 100% { box-shadow: 0 0 30px rgba(220,180,80,0.45), 0 0 0 5px rgba(200,160,80,0.2); }
-    50% { box-shadow: 0 0 50px rgba(240,200,100,0.6), 0 0 0 10px rgba(200,160,80,0.35); }
+    0%, 100% { box-shadow: 0 0 30px rgba(130,190,230,0.5), 0 0 0 5px rgba(130,190,230,0.22); }
+    50% { box-shadow: 0 0 50px rgba(160,210,245,0.65), 0 0 0 10px rgba(130,190,230,0.38); }
   }
 
   /* ========== 碎裂动画 ========== */
   @keyframes shatter {
     0%   { transform: scale(1); opacity: 1; filter: blur(0); }
-    30%  { transform: scale(1.08) rotate(3deg); opacity: 0.9; filter: blur(0); }
-    100% { transform: scale(0.15) rotate(25deg); opacity: 0; filter: blur(6px); }
+    25%  { transform: scale(1.05) rotate(2deg); opacity: 0.9; filter: blur(0); }
+    60%  { transform: scale(0.5) rotate(8deg); opacity: 0.4; filter: blur(2px); }
+    100% { transform: scale(0.1) rotate(20deg); opacity: 0; filter: blur(8px); }
   }
   .mood-btn.shattering {
-    animation: shatter 0.55s cubic-bezier(0.6, 0, 1, 0.8) forwards !important;
+    animation: shatter 1.0s cubic-bezier(0.5, 0, 0.75, 0.6) forwards !important;
     pointer-events: none;
   }
 
   /* 选中泡泡放大占屏 */
   @keyframes bubbleExpand {
     0%   { transform: scale(1); border-radius: 50%; opacity: 1; }
-    50%  { transform: scale(2.5); border-radius: 50%; opacity: 0.95; }
-    100% { transform: scale(8); border-radius: 40%; opacity: 0; }
+    30%  { transform: scale(1.6); border-radius: 50%; opacity: 1; }
+    60%  { transform: scale(3.5); border-radius: 48%; opacity: 0.85; }
+    100% { transform: scale(9); border-radius: 35%; opacity: 0; }
   }
   .mood-btn.expanding {
-    animation: bubbleExpand 0.9s cubic-bezier(0.4, 0, 0.2, 1) forwards !important;
+    animation: bubbleExpand 1.5s ease-out forwards !important;
     pointer-events: none;
-    background: rgba(200, 160, 80, 0.5);
-    border-color: rgba(255,215,100,0.5);
+    background: linear-gradient(135deg, rgba(140,200,235,0.45), rgba(100,170,220,0.4), rgba(160,215,245,0.45));
+    border-color: rgba(180,220,245,0.5);
   }
 
   /* ========== 播放面板（初始隐藏，覆盖在舞台上方） ========== */
@@ -564,18 +566,18 @@
         if (b !== btn) b.classList.add("shattering");
       });
 
-      // Step 2: 选中泡泡放大并消失
+      // Step 2: 选中泡泡放大并消失 (等碎裂跑一多半再开始)
       setTimeout(function() {
         btn.classList.remove("active");
         btn.classList.add("expanding");
 
-        // 隐藏整个泡泡网格
+        // 放大到一半再淡出网格
         setTimeout(function() {
           moodGrid.classList.add("fading");
-        }, 600);
-      }, 500);
+        }, 1100);
+      }, 900);
 
-      // Step 3: 显示播放面板
+      // Step 3: 显示播放面板 (等放大动画结束)
       setTimeout(function() {
         playerPanel.classList.add("revealed");
 
@@ -600,7 +602,7 @@
         }
 
         isTransitioning = false;
-      }, 900);
+      }, 2500);
     });
   });
 
@@ -618,13 +620,13 @@
     // 隐藏播放面板
     playerPanel.classList.remove("revealed");
 
-    // 重置所有泡泡
+    // 等面板淡出后再重置泡泡
     setTimeout(function() {
       var allBtns = moodGrid.querySelectorAll(".mood-btn");
       allBtns.forEach(function(b) { b.classList.remove("active", "shattering", "expanding"); });
       moodGrid.classList.remove("fading");
       isTransitioning = false;
-    }, 500);
+    }, 700);
   });
 
   /* ========== 首次遮罩 ========== */
