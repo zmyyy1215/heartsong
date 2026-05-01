@@ -30,6 +30,27 @@
     100% { background-position: 0% 50%; }
   }
 
+  /* 背景浮动光点 */
+  body::after {
+    content: ""; position: fixed; inset: 0; pointer-events: none; z-index: 0;
+    background-image:
+      radial-gradient(2px 2px at 15% 25%, rgba(255,255,255,0.5), transparent),
+      radial-gradient(2px 2px at 75% 20%, rgba(255,255,255,0.4), transparent),
+      radial-gradient(1px 1px at 30% 60%, rgba(255,255,255,0.5), transparent),
+      radial-gradient(2px 2px at 60% 70%, rgba(255,255,255,0.35), transparent),
+      radial-gradient(1px 1px at 85% 45%, rgba(255,255,255,0.45), transparent),
+      radial-gradient(1px 1px at 10% 80%, rgba(255,255,255,0.4), transparent),
+      radial-gradient(2px 2px at 50% 10%, rgba(255,255,255,0.35), transparent),
+      radial-gradient(1px 1px at 90% 85%, rgba(255,255,255,0.45), transparent);
+    background-size: 200% 200%;
+    animation: particlesDrift 30s ease-in-out infinite;
+  }
+  @keyframes particlesDrift {
+    0%, 100% { background-position: 0% 0%; }
+    33% { background-position: 3% 2%; }
+    66% { background-position: -2% 3%; }
+  }
+
   /* ========== 首次点击遮罩 ========== */
   .overlay {
     position: fixed; inset: 0; z-index: 1000;
@@ -51,7 +72,7 @@
   .container {
     width: 100%; max-width: 480px; padding: 30px 20px 40px;
     display: flex; flex-direction: column; align-items: center;
-    position: relative;
+    position: relative; z-index: 1;
   }
 
   /* ========== 标题 ========== */
@@ -99,12 +120,19 @@
                 opacity 0.4s ease, box-shadow 0.4s ease,
                 background 0.4s ease, border-color 0.4s ease;
   }
-  /* 高光 */
+  /* 双层高光 */
   .mood-btn::before {
     content: ""; position: absolute; top: 10px; left: 16px;
-    width: 18px; height: 10px; border-radius: 50%;
-    background: rgba(255,255,255,0.4);
+    width: 16px; height: 8px; border-radius: 50%;
+    background: rgba(255,255,255,0.55);
     transform: rotate(-25deg); pointer-events: none;
+    box-shadow: 0 0 6px rgba(255,255,255,0.3);
+  }
+  .mood-btn::after {
+    content: ""; position: absolute; top: 18px; left: 22px;
+    width: 8px; height: 4px; border-radius: 50%;
+    background: rgba(255,255,255,0.35);
+    transform: rotate(-20deg); pointer-events: none;
   }
   /* 大小不一 */
   .mood-btn:nth-child(3n+1) { width: 74px; height: 74px; font-size: 12px; }
@@ -159,30 +187,38 @@
     50% { box-shadow: 0 0 50px rgba(160,210,245,0.65), 0 0 0 10px rgba(130,190,230,0.38); }
   }
 
-  /* ========== 碎裂动画 ========== */
+  /* ========== 碎裂动画（纯 opacity + scale，GPU友好） ========== */
   @keyframes shatter {
-    0%   { transform: scale(1); opacity: 1; filter: blur(0); }
-    25%  { transform: scale(1.05) rotate(2deg); opacity: 0.9; filter: blur(0); }
-    60%  { transform: scale(0.5) rotate(8deg); opacity: 0.4; filter: blur(2px); }
-    100% { transform: scale(0.1) rotate(20deg); opacity: 0; filter: blur(8px); }
+    0%   { transform: scale(1); opacity: 1; }
+    40%  { transform: scale(1.03); opacity: 0.8; }
+    100% { transform: scale(0.25); opacity: 0; }
   }
   .mood-btn.shattering {
-    animation: shatter 1.0s cubic-bezier(0.5, 0, 0.75, 0.6) forwards !important;
+    animation: shatter 1.3s ease-out forwards !important;
     pointer-events: none;
   }
 
-  /* 选中泡泡放大占屏 */
+  /* 选中泡泡缓缓放大消散 */
   @keyframes bubbleExpand {
-    0%   { transform: scale(1); border-radius: 50%; opacity: 1; }
-    30%  { transform: scale(1.6); border-radius: 50%; opacity: 1; }
-    60%  { transform: scale(3.5); border-radius: 48%; opacity: 0.85; }
-    100% { transform: scale(9); border-radius: 35%; opacity: 0; }
+    0%   { transform: scale(1); opacity: 1; }
+    25%  { transform: scale(1.4); opacity: 1; }
+    55%  { transform: scale(2.8); opacity: 0.7; }
+    100% { transform: scale(5); opacity: 0; }
   }
   .mood-btn.expanding {
-    animation: bubbleExpand 1.5s ease-out forwards !important;
+    animation: bubbleExpand 2.0s ease-out forwards !important;
     pointer-events: none;
-    background: linear-gradient(135deg, rgba(140,200,235,0.45), rgba(100,170,220,0.4), rgba(160,215,245,0.45));
-    border-color: rgba(180,220,245,0.5);
+    background: linear-gradient(135deg,
+      rgba(140,200,235,0.35),
+      rgba(110,180,225,0.3),
+      rgba(160,220,245,0.35),
+      rgba(130,195,230,0.3)
+    );
+    border-color: rgba(180,220,245,0.45);
+    box-shadow:
+      0 0 60px rgba(140,200,235,0.4),
+      0 0 120px rgba(130,190,225,0.25),
+      0 20px 60px rgba(100,160,210,0.2);
   }
 
   /* ========== 播放面板（初始隐藏，覆盖在舞台上方） ========== */
@@ -196,6 +232,9 @@
   .player-panel.revealed {
     opacity: 1; transform: translateY(0) scale(1);
     pointer-events: auto;
+    /* 微妙的光晕边框 */
+    filter: drop-shadow(0 0 20px rgba(180,160,210,0.25));
+    -webkit-filter: drop-shadow(0 0 20px rgba(180,160,210,0.25));
   }
 
   /* 唱片 */
@@ -215,7 +254,14 @@
     background: linear-gradient(135deg, rgba(255,255,255,0.1) 0%, transparent 40%, transparent 60%, rgba(255,255,255,0.03) 100%);
     z-index: 2; pointer-events: none;
   }
-  .disc.spinning { animation: spin 3s linear infinite; }
+  .disc.spinning {
+    animation: spin 3s linear infinite;
+    box-shadow:
+      0 8px 36px rgba(0,0,0,0.5),
+      0 0 0 4px rgba(0,0,0,0.3),
+      0 0 0 6px rgba(255,255,255,0.06),
+      0 0 40px rgba(180,160,200,0.15);
+  }
   @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
   .disc-label {
     position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
@@ -566,18 +612,18 @@
         if (b !== btn) b.classList.add("shattering");
       });
 
-      // Step 2: 选中泡泡放大并消失 (等碎裂跑一多半再开始)
+      // Step 2: 选中泡泡放大 (等碎裂跑差不多)
       setTimeout(function() {
         btn.classList.remove("active");
         btn.classList.add("expanding");
 
-        // 放大到一半再淡出网格
+        // 放大中途淡出网格
         setTimeout(function() {
           moodGrid.classList.add("fading");
-        }, 1100);
-      }, 900);
+        }, 1400);
+      }, 1100);
 
-      // Step 3: 显示播放面板 (等放大动画结束)
+      // Step 3: 显示播放面板 (等放大完整结束)
       setTimeout(function() {
         playerPanel.classList.add("revealed");
 
@@ -602,7 +648,7 @@
         }
 
         isTransitioning = false;
-      }, 2500);
+      }, 3200);
     });
   });
 
