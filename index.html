@@ -5,29 +5,21 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 <title>心声点歌机</title>
 <style>
-  /* ========== 全局 Reset & 基础 ========== */
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
   body {
     font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
-    min-height: 100vh;
-    min-height: 100dvh;
-    /* 动画渐变背景 */
-    background: linear-gradient(135deg,
-      #c9a7eb, #e8c4d8, #f0c6d2, #fad0c4, #f5d0e8,
-      #d4b8e8, #e8c0d0, #c9a7eb
-    );
-    background-size: 600% 600%;
-    animation: gradientShift 18s ease infinite;
+    min-height: 100vh; min-height: 100dvh;
+    background: linear-gradient(135deg, #0d0b1e, #1a1235, #1f1840, #251a4a, #0d0b1e);
+    background-size: 500% 500%;
+    animation: bgFlow 20s ease infinite;
     background-attachment: fixed;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+    display: flex; flex-direction: column; align-items: center;
     -webkit-tap-highlight-color: transparent;
     -webkit-overflow-scrolling: touch;
     overflow-x: hidden;
   }
-  @keyframes gradientShift {
+  @keyframes bgFlow {
     0%   { background-position: 0% 50%; }
     25%  { background-position: 50% 0%; }
     50%  { background-position: 100% 50%; }
@@ -38,331 +30,307 @@
   /* ========== 首次点击遮罩 ========== */
   .overlay {
     position: fixed; inset: 0; z-index: 1000;
-    background: rgba(60, 30, 60, 0.82);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    transition: opacity 0.5s ease;
+    background: rgba(8, 6, 22, 0.88);
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    cursor: pointer; transition: opacity 0.6s ease;
   }
   .overlay.hidden { opacity: 0; pointer-events: none; }
-  .overlay-icon { font-size: 64px; animation: float 2s ease-in-out infinite; margin-bottom: 20px; }
+  .overlay-icon { font-size: 60px; animation: float 2.2s ease-in-out infinite; margin-bottom: 20px; }
   @keyframes float {
     0%, 100% { transform: translateY(0); }
     50% { transform: translateY(-10px); }
   }
-  .overlay-text {
-    color: #fff; font-size: 20px; font-weight: 600;
-    letter-spacing: 2px; text-align: center; line-height: 1.6;
-  }
-  .overlay-sub  { color: rgba(255,255,255,0.7); font-size: 14px; margin-top: 8px; }
+  .overlay-text { color: #e8e0f0; font-size: 20px; font-weight: 600; letter-spacing: 2px; text-align: center; line-height: 1.6; }
+  .overlay-sub  { color: rgba(232,224,240,0.6); font-size: 14px; margin-top: 8px; }
 
   /* ========== 主容器 ========== */
   .container {
     width: 100%; max-width: 480px; padding: 30px 20px 40px;
     display: flex; flex-direction: column; align-items: center;
+    position: relative;
   }
 
   /* ========== 标题 ========== */
-  .title {
-    font-size: 26px; font-weight: 700; color: #4a2040;
-    text-align: center; margin-bottom: 6px; letter-spacing: 1px;
-  }
-  .subtitle { font-size: 13px; color: #7a5a7a; margin-bottom: 28px; text-align: center; }
+  .title { font-size: 26px; font-weight: 700; color: #e0d8f0; text-align: center; margin-bottom: 6px; letter-spacing: 1px; }
+  .subtitle { font-size: 13px; color: #9a8ab8; margin-bottom: 24px; text-align: center; }
 
   /* ========== 心情泡泡区 ========== */
   .mood-grid {
     width: 100%; max-width: 440px;
     display: flex; flex-wrap: wrap; justify-content: center;
     align-items: center; align-content: center;
-    gap: 10px 12px; padding: 16px 4px; margin-bottom: 18px;
-    min-height: 200px;
+    gap: 12px 14px; padding: 10px 4px; margin-bottom: 20px;
+    min-height: 220px; position: relative;
+    transition: opacity 0.3s ease;
   }
+  .mood-grid.fading { opacity: 0; pointer-events: none; }
 
-  /* ---- 圆形水晶泡泡 ---- */
+  /* 圆形泡泡 */
   .mood-btn {
     position: relative;
-    width: 76px; height: 76px;
-    border-radius: 50%;
-    border: 1.5px solid rgba(255,255,255,0.5);
-    background: rgba(255,255,255,0.25);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-    color: #4a2040; font-size: 13px; font-weight: 500;
+    width: 80px; height: 80px; border-radius: 50%;
+    border: 1.5px solid rgba(255,255,255,0.28);
+    background: rgba(255,255,255,0.1);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    color: #d8d0e8; font-size: 13px; font-weight: 500;
     display: flex; flex-direction: column;
     align-items: center; justify-content: center;
     gap: 2px; line-height: 1;
     cursor: pointer;
     box-shadow:
-      0 4px 14px rgba(100,40,80,0.08),
-      inset 0 1px 2px rgba(255,255,255,0.55);
+      0 3px 12px rgba(0,0,0,0.2),
+      inset 0 1px 2px rgba(255,255,255,0.25),
+      inset 0 -2px 4px rgba(0,0,0,0.1);
     -webkit-tap-highlight-color: transparent;
     will-change: transform, opacity;
     transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1),
-                opacity 0.4s ease,
-                box-shadow 0.4s ease,
-                background 0.4s ease,
-                border-color 0.4s ease;
+                opacity 0.4s ease, box-shadow 0.4s ease,
+                background 0.4s ease, border-color 0.4s ease;
   }
-  /* 玻璃高光 */
+  /* 高光 */
   .mood-btn::before {
-    content: ""; position: absolute; top: 8px; left: 14px;
-    width: 20px; height: 12px; border-radius: 50%;
-    background: rgba(255,255,255,0.55);
+    content: ""; position: absolute; top: 10px; left: 16px;
+    width: 18px; height: 10px; border-radius: 50%;
+    background: rgba(255,255,255,0.4);
     transform: rotate(-25deg); pointer-events: none;
   }
+  /* 大小不一 */
+  .mood-btn:nth-child(3n+1) { width: 74px; height: 74px; font-size: 12px; }
+  .mood-btn:nth-child(3n+3) { width: 86px; height: 86px; font-size: 14px; }
+  .mood-btn:nth-child(1)  { width: 92px; height: 92px; font-size: 15px; }
+  .mood-btn:nth-child(7)  { width: 90px; height: 90px; font-size: 15px; }
+  .mood-btn:nth-child(13) { width: 92px; height: 92px; font-size: 15px; }
+  .mood-btn:nth-child(14) { width: 90px; height: 90px; font-size: 15px; }
+  .mood-btn:nth-child(15) { width: 92px; height: 92px; font-size: 15px; }
 
-  /* ---- 大小不一 ---- */
-  .mood-btn:nth-child(3n+1) { width: 72px; height: 72px; font-size: 12px; }
-  .mood-btn:nth-child(3n+3) { width: 82px; height: 82px; font-size: 14px; }
-  .mood-btn:nth-child(1)  { width: 90px; height: 90px; font-size: 15px; }
-  .mood-btn:nth-child(7)  { width: 88px; height: 88px; font-size: 15px; }
-  .mood-btn:nth-child(13) { width: 90px; height: 90px; font-size: 15px; }
-  .mood-btn:nth-child(14) { width: 88px; height: 88px; font-size: 15px; }
-  .mood-btn:nth-child(15) { width: 90px; height: 90px; font-size: 15px; }
-
-  /* ---- 漂浮动画 ---- */
-  @keyframes bubbleFloat {
-    0%, 100% { transform: translateY(0); }
-    35%  { transform: translateY(-7px); }
-    70%  { transform: translateY(3px); }
+  /* 缓慢挤压漂移 */
+  @keyframes driftA {
+    0%, 100% { transform: translate(0, 0); }
+    30% { transform: translate(6px, -5px); }
+    60% { transform: translate(-4px, 3px); }
+    85% { transform: translate(2px, 4px); }
   }
-  .mood-btn:nth-child(4n+1) { animation: bubbleFloat 5.0s ease-in-out infinite; }
-  .mood-btn:nth-child(4n+2) { animation: bubbleFloat 5.6s ease-in-out infinite; animation-delay: 1.2s; }
-  .mood-btn:nth-child(4n+3) { animation: bubbleFloat 4.6s ease-in-out infinite; animation-delay: 2.6s; }
-  .mood-btn:nth-child(4n+4) { animation: bubbleFloat 5.3s ease-in-out infinite; animation-delay: 3.8s; }
-  /* 个别微调让节奏更散 */
-  .mood-btn:nth-child(2)  { animation-duration: 4.8s; }
-  .mood-btn:nth-child(6)  { animation-duration: 5.8s; }
-  .mood-btn:nth-child(10) { animation-duration: 4.4s; }
-  .mood-btn:nth-child(14) { animation-duration: 5.2s; }
+  @keyframes driftB {
+    0%, 100% { transform: translate(0, 0); }
+    25% { transform: translate(-5px, -4px); }
+    55% { transform: translate(4px, 6px); }
+    80% { transform: translate(-3px, -2px); }
+  }
+  @keyframes driftC {
+    0%, 100% { transform: translate(0, 0); }
+    35% { transform: translate(-5px, 5px); }
+    50% { transform: translate(6px, -2px); }
+    75% { transform: translate(-2px, -5px); }
+  }
+  .mood-btn:nth-child(5n+1) { animation: driftA 6s ease-in-out infinite; }
+  .mood-btn:nth-child(5n+2) { animation: driftB 7s ease-in-out infinite; animation-delay: 0.8s; }
+  .mood-btn:nth-child(5n+3) { animation: driftC 5.5s ease-in-out infinite; animation-delay: 1.5s; }
+  .mood-btn:nth-child(5n+4) { animation: driftA 6.5s ease-in-out infinite; animation-delay: 2.2s; }
+  .mood-btn:nth-child(5n+5) { animation: driftB 5.8s ease-in-out infinite; animation-delay: 3s; }
 
-  /* ---- 点击回弹 ---- */
-  .mood-btn:active { transform: scale(0.88); transition: transform 0.12s ease; }
+  .mood-btn:active { transform: scale(0.88); transition: transform 0.1s ease; }
 
-  /* ---- 选中态：放大 + 发光 ---- */
+  /* 选中态：金色发光 */
   .mood-btn.active {
-    transform: scale(1.2);
-    background: rgba(195, 115, 170, 0.75);
-    color: #fff;
-    border-color: rgba(255,255,255,0.72);
+    background: rgba(200, 160, 80, 0.6);
+    color: #fff; border-color: rgba(255,215,100,0.6);
     box-shadow:
-      0 0 28px rgba(180,100,160,0.45),
-      0 0 0 5px rgba(180,100,160,0.18),
-      inset 0 1px 2px rgba(255,255,255,0.55);
-    z-index: 5;
-    animation: activePulse 2.2s ease-in-out infinite;
+      0 0 30px rgba(220,180,80,0.45),
+      0 0 0 5px rgba(200,160,80,0.2),
+      inset 0 1px 2px rgba(255,255,255,0.4);
+    transform: scale(1.15); z-index: 5;
+    animation: activeGlow 2s ease-in-out infinite;
     font-weight: 700;
   }
-  @keyframes activePulse {
-    0%, 100% { box-shadow: 0 0 28px rgba(180,100,160,0.45), 0 0 0 5px rgba(180,100,160,0.18), inset 0 1px 2px rgba(255,255,255,0.55); }
-    50% { box-shadow: 0 0 44px rgba(200,120,180,0.6), 0 0 0 9px rgba(180,100,160,0.3), inset 0 1px 2px rgba(255,255,255,0.55); }
+  @keyframes activeGlow {
+    0%, 100% { box-shadow: 0 0 30px rgba(220,180,80,0.45), 0 0 0 5px rgba(200,160,80,0.2); }
+    50% { box-shadow: 0 0 50px rgba(240,200,100,0.6), 0 0 0 10px rgba(200,160,80,0.35); }
   }
 
-  /* ---- 其他泡泡收拢 ---- */
-  .mood-grid.has-active .mood-btn:not(.active) {
-    transform: scale(0.82);
-    opacity: 0.4;
-    transition: transform 0.45s cubic-bezier(0.34, 1.56, 0.64, 1),
-                opacity 0.45s ease;
+  /* ========== 碎裂动画 ========== */
+  @keyframes shatter {
+    0%   { transform: scale(1); opacity: 1; filter: blur(0); }
+    30%  { transform: scale(1.08) rotate(3deg); opacity: 0.9; filter: blur(0); }
+    100% { transform: scale(0.15) rotate(25deg); opacity: 0; filter: blur(6px); }
+  }
+  .mood-btn.shattering {
+    animation: shatter 0.55s cubic-bezier(0.6, 0, 1, 0.8) forwards !important;
+    pointer-events: none;
   }
 
-  /* ========== 唱片区 ========== */
-  .disc-wrapper {
-    width: 200px; height: 200px; margin: 16px 0 20px;
-    position: relative; display: flex; align-items: center; justify-content: center;
+  /* 选中泡泡放大占屏 */
+  @keyframes bubbleExpand {
+    0%   { transform: scale(1); border-radius: 50%; opacity: 1; }
+    50%  { transform: scale(2.5); border-radius: 50%; opacity: 0.95; }
+    100% { transform: scale(8); border-radius: 40%; opacity: 0; }
   }
+  .mood-btn.expanding {
+    animation: bubbleExpand 0.9s cubic-bezier(0.4, 0, 0.2, 1) forwards !important;
+    pointer-events: none;
+    background: rgba(200, 160, 80, 0.5);
+    border-color: rgba(255,215,100,0.5);
+  }
+
+  /* ========== 播放面板（初始隐藏） ========== */
+  .player-panel {
+    display: flex; flex-direction: column; align-items: center;
+    opacity: 0; transform: translateY(30px) scale(0.9);
+    transition: all 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+    pointer-events: none; width: 100%;
+  }
+  .player-panel.revealed {
+    opacity: 1; transform: translateY(0) scale(1);
+    pointer-events: auto;
+  }
+
+  /* 唱片 */
+  .disc-wrapper { width: 200px; height: 200px; margin: 0 0 18px; position: relative; display: flex; align-items: center; justify-content: center; }
   .disc {
-    width: 180px; height: 180px; border-radius: 50%;
-    position: relative;
+    width: 180px; height: 180px; border-radius: 50%; position: relative;
     background: radial-gradient(circle at 50% 50%,
       #1a1a1a 0%, #2a2a2a 8%, #111 15%, #222 22%,
       #1a1a1a 28%, #2a2a2a 35%, #111 42%,
       #1a1a1a 48%, #222 55%, #111 62%,
-      #2a2a2a 68%, #1a1a1a 72%
-    );
-    box-shadow:
-      0 8px 32px rgba(80, 30, 60, 0.35),
-      0 0 0 4px rgba(0,0,0,0.3),
-      0 0 0 6px rgba(255,255,255,0.08);
-    /* 光泽 */
+      #2a2a2a 68%, #1a1a1a 72%);
+    box-shadow: 0 8px 36px rgba(0,0,0,0.5), 0 0 0 4px rgba(0,0,0,0.3), 0 0 0 6px rgba(255,255,255,0.06);
     overflow: hidden;
   }
   .disc::before {
     content: ""; position: absolute; inset: 0; border-radius: 50%;
-    background: linear-gradient(135deg,
-      rgba(255,255,255,0.12) 0%, transparent 40%,
-      transparent 60%, rgba(255,255,255,0.04) 100%
-    );
+    background: linear-gradient(135deg, rgba(255,255,255,0.1) 0%, transparent 40%, transparent 60%, rgba(255,255,255,0.03) 100%);
     z-index: 2; pointer-events: none;
   }
   .disc.spinning { animation: spin 3s linear infinite; }
   @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
-
-  /* 唱片中心标签 */
   .disc-label {
-    position: absolute; top: 50%; left: 50%;
-    transform: translate(-50%, -50%);
+    position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
     width: 60px; height: 60px; border-radius: 50%;
-    background: linear-gradient(135deg, #e8a0bf, #c97dab);
+    background: linear-gradient(135deg, #b8963e, #8a6828);
     display: flex; align-items: center; justify-content: center;
     font-size: 13px; font-weight: 700; color: #fff;
-    text-align: center; line-height: 1.3; letter-spacing: 1px;
-    z-index: 3;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.3), inset 0 1px 2px rgba(255,255,255,0.3);
+    text-align: center; line-height: 1.3; letter-spacing: 1px; z-index: 3;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.4), inset 0 1px 2px rgba(255,255,255,0.25);
   }
   .disc-label::after {
-    content: ""; position: absolute; top: 50%; left: 50%;
-    transform: translate(-50%, -50%);
-    width: 6px; height: 6px; border-radius: 50%;
-    background: #4a2040;
+    content: ""; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+    width: 6px; height: 6px; border-radius: 50%; background: #2a1a08;
   }
 
-  /* ========== 歌名区 ========== */
+  /* 歌名 */
   .song-name {
-    font-size: 17px; font-weight: 600; color: #4a2040;
-    margin-bottom: 6px; min-height: 24px; text-align: center;
-    transition: opacity 0.3s;
+    font-size: 18px; font-weight: 700; color: #e0d8f0;
+    margin-bottom: 8px; min-height: 24px; text-align: center;
+    transition: opacity 0.4s;
   }
 
-  /* ========== 悄悄话区 ========== */
+  /* 悄悄话 */
   .whisper-box {
-    background: rgba(255,255,255,0.5);
-    backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px);
+    background: rgba(255,255,255,0.08);
+    backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(255,255,255,0.12);
     border-radius: 16px; padding: 18px 22px;
     max-width: 380px; width: 100%; min-height: 60px;
-    text-align: center; color: #4a2040; font-size: 15px;
+    text-align: center; color: #c8c0d8; font-size: 15px;
     line-height: 1.7; letter-spacing: 0.5px;
-    box-shadow: 0 4px 16px rgba(0,0,0,0.05);
+    box-shadow: 0 4px 16px rgba(0,0,0,0.2);
     opacity: 0; transform: translateY(10px);
     transition: opacity 0.6s ease, transform 0.6s ease;
   }
   .whisper-box.show { opacity: 1; transform: translateY(0); }
 
-  /* ========== 底部 ========== */
+  /* 倒带按钮 */
+  .rewind-btn {
+    margin-top: 20px;
+    width: 48px; height: 48px; border-radius: 50%;
+    border: 1.5px solid rgba(255,255,255,0.25);
+    background: rgba(255,255,255,0.1);
+    backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+    color: #c8c0d8; font-size: 20px;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer; transition: all 0.3s ease;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+    -webkit-tap-highlight-color: transparent;
+  }
+  .rewind-btn:active { transform: scale(0.9); background: rgba(255,255,255,0.2); }
+  .rewind-btn:hover { border-color: rgba(255,255,255,0.45); }
+
+  /* 底部 */
   .footer {
-    margin-top: 32px; color: rgba(74,32,64,0.5);
+    margin-top: 28px; color: rgba(200,192,220,0.4);
     font-size: 12px; letter-spacing: 1px; text-align: center;
   }
 
-  /* ========== 适配超小屏 ========== */
   @media (max-width: 360px) {
     .title { font-size: 22px; }
     .disc-wrapper { width: 160px; height: 160px; }
     .disc { width: 144px; height: 144px; }
     .disc-label { width: 48px; height: 48px; font-size: 11px; }
-    .mood-grid { gap: 6px 8px; }
-    .mood-btn { width: 62px !important; height: 62px !important; font-size: 11px !important; }
-    .mood-btn:nth-child(1),
-    .mood-btn:nth-child(7),
-    .mood-btn:nth-child(13),
-    .mood-btn:nth-child(14),
-    .mood-btn:nth-child(15) { width: 72px !important; height: 72px !important; font-size: 13px !important; }
+    .mood-grid { gap: 8px 10px; }
+    .mood-btn { width: 64px !important; height: 64px !important; font-size: 11px !important; }
+    .mood-btn:nth-child(1), .mood-btn:nth-child(7), .mood-btn:nth-child(13),
+    .mood-btn:nth-child(14), .mood-btn:nth-child(15) { width: 74px !important; height: 74px !important; font-size: 13px !important; }
   }
 </style>
 </head>
 <body>
 
-<!-- ========== 首次点击遮罩 ========== -->
 <div class="overlay" id="overlay">
   <div class="overlay-icon">🎵</div>
   <div class="overlay-text">轻触屏幕<br>开启你的专属电台</div>
   <div class="overlay-sub">—— 给你的邓紫棋留声机 ——</div>
 </div>
 
-<!-- ========== 主容器 ========== -->
 <div class="container">
   <div class="title">🎶 打开我的留声机</div>
   <div class="subtitle">选一个心情，让我为你唱歌</div>
 
-  <!-- 心情水晶格子 -->
+  <!-- 泡泡区 -->
   <div class="mood-grid" id="moodGrid">
-    <button class="mood-btn" data-mood="tired"     >🌙 有点累</button>
-    <button class="mood-btn" data-mood="miss"      >💭 很想你</button>
-    <button class="mood-btn" data-mood="courage"   >✨ 要勇气</button>
-    <button class="mood-btn" data-mood="happy"     >☀️ 小开心</button>
-    <button class="mood-btn" data-mood="rain"      >🌧️ 有点雨</button>
-    <button class="mood-btn" data-mood="fire"      >🔥 需要燃</button>
-    <button class="mood-btn" data-mood="effort"    >💪 偷偷努力</button>
-    <button class="mood-btn" data-mood="sentimental">🌸 很感性</button>
-    <button class="mood-btn" data-mood="hug"       >🌠 求抱抱</button>
-    <button class="mood-btn" data-mood="imperfect" >🌈 不完美</button>
-    <button class="mood-btn" data-mood="special"   >🎂 特别日</button>
-    <button class="mood-btn" data-mood="insomnia"  >💤 失眠</button>
-    <button class="mood-btn" data-mood="random"    >🎲 随机</button>
-    <button class="mood-btn" data-mood="slacking" >🐟 摸鱼中</button>
-    <button class="mood-btn" data-mood="offwork"  >🎉 下班啦</button>
+    <button class="mood-btn" data-mood="tired"     >🌙<br>有点累</button>
+    <button class="mood-btn" data-mood="miss"      >💭<br>很想你</button>
+    <button class="mood-btn" data-mood="courage"   >✨<br>要勇气</button>
+    <button class="mood-btn" data-mood="happy"     >☀️<br>小开心</button>
+    <button class="mood-btn" data-mood="rain"      >🌧️<br>有点雨</button>
+    <button class="mood-btn" data-mood="fire"      >🔥<br>需要燃</button>
+    <button class="mood-btn" data-mood="effort"    >💪<br>偷偷努力</button>
+    <button class="mood-btn" data-mood="sentimental">🌸<br>很感性</button>
+    <button class="mood-btn" data-mood="hug"       >🌠<br>求抱抱</button>
+    <button class="mood-btn" data-mood="imperfect" >🌈<br>不完美</button>
+    <button class="mood-btn" data-mood="special"   >🎂<br>特别日</button>
+    <button class="mood-btn" data-mood="insomnia"  >💤<br>失眠</button>
+    <button class="mood-btn" data-mood="random"    >🎲<br>随机</button>
+    <button class="mood-btn" data-mood="slacking"  >🐟<br>摸鱼中</button>
+    <button class="mood-btn" data-mood="offwork"   >🎉<br>下班啦</button>
   </div>
 
-  <!-- 唱片 - 纯 CSS 绘制 -->
-  <div class="disc-wrapper">
-    <div class="disc" id="disc">
-      <div class="disc-label">G.E.M.<br>♫</div>
+  <!-- 播放面板（初始隐藏） -->
+  <div class="player-panel" id="playerPanel">
+    <div class="disc-wrapper">
+      <div class="disc" id="disc">
+        <div class="disc-label">G.E.M.<br>♫</div>
+      </div>
     </div>
+    <div class="song-name" id="songName"></div>
+    <div class="whisper-box" id="whisper"></div>
+    <button class="rewind-btn" id="rewindBtn" title="倒带返回">⏪</button>
   </div>
 
-  <!-- 当前歌名 -->
-  <div class="song-name" id="songName"></div>
-
-  <!-- 悄悄话 -->
-  <div class="whisper-box" id="whisper"></div>
-
-  <!-- 底部 -->
   <div class="footer">把耳朵借我几分钟，就给你听。</div>
 </div>
 
-<!-- ========== 隐藏的 Audio 元素 ========== -->
 <audio id="audio" preload="none"></audio>
 
 <script>
 (function() {
+
   /* ================================================================
    *  30首歌的心情映射 & 悄悄话
    *  每首歌需将对应 mp3 放在 music/ 目录下。
-   *  文件名采用 心情前缀_歌名拼音.mp3，方便你手动放入时对照。
    *  ================================================================
    *  格式: { file: "music/xxx.mp3", song: "歌名", whisper: "悄悄话" }
    *  ================================================================ */
-  /*
-   * ============================================================
-   *  你需要准备这 30 个 mp3 文件，放入 music/ 文件夹：
-   *  ============================================================
-   *   1. daoshu.mp3            — 倒数
-   *   2. touming.mp3           — 透明
-   *   3. henjiuyihou.mp3       — 很久以后
-   *   4. guangnianzhiwai.mp3   — 光年之外
-   *   5. duoyuan.mp3           — 多远都要在一起
-   *   6. xihuanni.mp3          — 喜欢你
-   *   7. xindexintiao.mp3      — 新的心跳
-   *   8. walkonwater.mp3       — Walk on Water
-   *   9. motian.mp3            — 来自天堂的魔鬼
-   *  10. haoxiang.mp3          — 好想好想你
-   *  11. tonghua.mp3           — 另一个童话
-   *  12. chabuduo.mp3          — 差不多姑娘
-   *  13. paomo.mp3             — 泡沫
-   *  14. shunjian.mp3          — 瞬间
-   *  15. zaijian.mp3           — 再见
-   *  16. motion.mp3            — 摩天动物园
-   *  17. chaonengli.mp3        — 超能力
-   *  18. pandeng.mp3           — 攀登
-   *  19. yilunifeng.mp3        — 一路逆风
-   *  20. juhao.mp3             — 句号
-   *  21. mangdian.mp3          — 盲点
-   *  22. kuaile.mp3            — 你不是真正的快乐
-   *  23. ouer.mp3              — 偶尔
-   *  24. shuigongzhu.mp3       — 睡公主
-   *  25. yushi.mp3             — 于是
-   *  26. chakekaojin.mp3       — 查克靠近
-   *  27. taohuanuo.mp3         — 桃花诺
-   *  28. danxing.mp3           — 单行的轨道
-   *  29. qiji.mp3              — 奇迹
-   *  30. allaboutu.mp3         — All About U
-   * ============================================================
-   *  歌曲可共用：比如「倒数」同时出现在「有点累」和「求抱抱」
-   *  中，它们都指向 music/daoshu.mp3，你只需放一个文件。
-   * ============================================================ */
   var MOODS = {
 
     /* ------ 🌙 有点累 ------ */
@@ -506,164 +474,159 @@
     ]
   };
 
-  /* ========== DOM 元素 ========== */
-  var overlay       = document.getElementById("overlay");
-  var moodGrid      = document.getElementById("moodGrid");
-  var disc          = document.getElementById("disc");
-  var songNameEl    = document.getElementById("songName");
-  var whisperEl     = document.getElementById("whisper");
-  var audio         = document.getElementById("audio");
+  /* ========== DOM ========== */
+  var overlay     = document.getElementById("overlay");
+  var moodGrid    = document.getElementById("moodGrid");
+  var playerPanel = document.getElementById("playerPanel");
+  var disc        = document.getElementById("disc");
+  var songNameEl  = document.getElementById("songName");
+  var whisperEl   = document.getElementById("whisper");
+  var rewindBtn   = document.getElementById("rewindBtn");
+  var audio       = document.getElementById("audio");
 
-  /* ========== 状态 ========== */
-  var currentAudioSrc = null;   // 当前加载的音频 src
-  var audioUnlocked    = false; // 用户是否已交互
+  var currentAudioSrc = null;
+  var audioUnlocked   = false;
+  var isTransitioning = false; // 动画进行中，禁止点击
 
-  /* ========== 辅助函数 ========== */
-
-  /** 随机选数组中的一项 */
+  /* ========== 辅助 ========== */
   function pick(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
 
-  /** 停止当前播放并重置唱片 */
   function stopAndReset() {
-    audio.pause();
-    audio.currentTime = 0;
+    audio.pause(); audio.currentTime = 0;
     disc.classList.remove("spinning");
   }
 
-  /** 显示悄悄话，带淡入动画（先移除再添加 show 以触发 transition） */
   function showWhisper(text) {
     whisperEl.classList.remove("show");
-    // 强制回流，确保 transition 重新触发
     void whisperEl.offsetWidth;
     whisperEl.textContent = text;
     whisperEl.classList.add("show");
   }
 
-  /** 播放指定歌曲 */
   function playSong(songData) {
     stopAndReset();
-
-    // 更新歌名
     songNameEl.textContent = songData.song;
-
-    // 设置音频源
     audio.src = songData.file;
     currentAudioSrc = songData.file;
-
-    // 播放
     var playPromise = audio.play();
     if (playPromise !== undefined) {
       playPromise.then(function() {
-        // 播放成功，唱片开始旋转
         disc.classList.add("spinning");
       }).catch(function(err) {
-        // 自动播放被阻止或文件加载失败
         console.log("播放失败: " + err.message);
-        disc.classList.add("spinning"); // 视觉上还是转
-        // 如果是文件错误，不会是 AbortError
-        if (err.name !== "AbortError") {
-          // 可能是文件不存在，依然显示悄悄话
-        }
+        disc.classList.add("spinning");
       });
     }
-
-    // 显示悄悄话
     showWhisper(songData.whisper);
   }
 
-  /* ========== 音频事件 ========== */
-
-  // 播放结束，停止旋转
   audio.addEventListener("ended", function() {
     disc.classList.remove("spinning");
   });
 
-  // 音频错误处理：文件不存在或无法加载
   audio.addEventListener("error", function() {
     disc.classList.remove("spinning");
-    // 悄悄话区域显示兜底文案（如果当前没有悄悄话或想覆盖）
     if (whisperEl.textContent && whisperEl.textContent.indexOf("还在路上") === -1) {
-      showWhisper(whisperEl.textContent + "\n\n（这首歌还在路上，先看看这句话吧 💿）");
+      showWhisper(whisperEl.textContent + "\n\n（这首歌还在路上，先看看这句话吧）");
     }
-    console.warn("音频文件加载失败: " + (currentAudioSrc || "未知"));
   });
 
-  /* ========== 心情按钮点击 ========== */
+  /* ========== 选中泡泡 → 碎裂 → 展开 → 显示播放器 ========== */
   moodGrid.addEventListener("click", function(e) {
     var btn = e.target.closest(".mood-btn");
-    if (!btn) return;
-
-    var wasActive = btn.classList.contains("active");
-
-    // 先清除所有选中状态
-    var allBtns = moodGrid.querySelectorAll(".mood-btn");
-    allBtns.forEach(function(b) { b.classList.remove("active"); });
-    moodGrid.classList.remove("has-active");
-
-    // 如果之前已选中 → 取消选中，不播放
-    if (wasActive) {
-      stopAndReset();
-      songNameEl.textContent = "";
-      whisperEl.classList.remove("show");
-      whisperEl.textContent = "";
-      return;
-    }
-
-    // 新的选中
-    btn.classList.add("active");
-    moodGrid.classList.add("has-active");
+    if (!btn || isTransitioning) return;
 
     var mood = btn.getAttribute("data-mood");
 
-    // 🎲 随机：从所有心情的所有歌曲中随机选一首
-    var songList;
-    if (mood === "random") {
-      var allSongs = [];
-      Object.keys(MOODS).forEach(function(key) {
-        allSongs = allSongs.concat(MOODS[key]);
-      });
-      // 去重（按 file 路径）
-      var seen = {};
-      allSongs = allSongs.filter(function(s) {
-        if (seen[s.file]) return false;
-        seen[s.file] = true;
-        return true;
-      });
-      songList = allSongs;
-    } else {
-      songList = MOODS[mood];
-    }
+    // 先清除所有 active
+    var allBtns = moodGrid.querySelectorAll(".mood-btn");
+    allBtns.forEach(function(b) { b.classList.remove("active", "shattering", "expanding"); });
 
-    if (!songList || songList.length === 0) return;
+    // 标记选中
+    btn.classList.add("active");
+    isTransitioning = true;
 
-    var chosen = pick(songList);
-    playSong(chosen);
+    // Step 1: 其他泡泡碎裂 (延迟一点让 active 渲染)
+    requestAnimationFrame(function() {
+      allBtns.forEach(function(b) {
+        if (b !== btn) b.classList.add("shattering");
+      });
+
+      // Step 2: 选中泡泡放大并消失
+      setTimeout(function() {
+        btn.classList.remove("active");
+        btn.classList.add("expanding");
+
+        // 隐藏整个泡泡网格
+        setTimeout(function() {
+          moodGrid.classList.add("fading");
+        }, 600);
+      }, 500);
+
+      // Step 3: 显示播放面板
+      setTimeout(function() {
+        playerPanel.classList.add("revealed");
+
+        // 选歌播放
+        var songList;
+        if (mood === "random") {
+          var allSongs = [];
+          Object.keys(MOODS).forEach(function(key) {
+            allSongs = allSongs.concat(MOODS[key]);
+          });
+          var seen = {};
+          allSongs = allSongs.filter(function(s) {
+            if (seen[s.file]) return false;
+            seen[s.file] = true; return true;
+          });
+          songList = allSongs;
+        } else {
+          songList = MOODS[mood];
+        }
+        if (songList && songList.length > 0) {
+          playSong(pick(songList));
+        }
+
+        isTransitioning = false;
+      }, 900);
+    });
   });
 
-  /* ========== 首次点击遮罩：解锁音频并隐藏遮罩 ========== */
+  /* ========== 倒带返回泡泡界面 ========== */
+  rewindBtn.addEventListener("click", function() {
+    if (isTransitioning) return;
+    isTransitioning = true;
+
+    // 停止播放
+    stopAndReset();
+    songNameEl.textContent = "";
+    whisperEl.classList.remove("show");
+    whisperEl.textContent = "";
+
+    // 隐藏播放面板
+    playerPanel.classList.remove("revealed");
+
+    // 重置所有泡泡
+    setTimeout(function() {
+      var allBtns = moodGrid.querySelectorAll(".mood-btn");
+      allBtns.forEach(function(b) { b.classList.remove("active", "shattering", "expanding"); });
+      moodGrid.classList.remove("fading");
+      isTransitioning = false;
+    }, 500);
+  });
+
+  /* ========== 首次遮罩 ========== */
   overlay.addEventListener("click", function() {
     if (audioUnlocked) return;
     audioUnlocked = true;
-
-    // 尝试解锁音频上下文（iOS/微信 需要一次用户手势后 audio 才能播放）
-    // 创建一个无声的短音频来"激活" audio context
     audio.volume = 0;
     audio.play().then(function() {
-      audio.pause();
-      audio.currentTime = 0;
-      audio.volume = 1;
-    }).catch(function() {
-      audio.volume = 1;
-    });
-
+      audio.pause(); audio.currentTime = 0; audio.volume = 1;
+    }).catch(function() { audio.volume = 1; });
     overlay.classList.add("hidden");
   });
 
-  /* ========== 初始化：默认显示 disc 或 placeholder ========== */
-  // disc 的显示由 onload/onerror 和初始检测处理
-
 })();
 </script>
-
 </body>
 </html>
