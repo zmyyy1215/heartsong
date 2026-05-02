@@ -611,27 +611,14 @@
     stopAndReset();
     muteBGM();
     songNameEl.textContent = songData.song;
+    audio.src = songData.file;
     currentAudioSrc = songData.file;
+    audio.play().then(function() {
+      disc.classList.add("spinning");
+    }).catch(function() {
+      disc.classList.add("spinning");
+    });
     showWhisper(songData.whisper);
-    // 等缓冲足够再播，避免卡顿
-    audio.addEventListener("canplay", function ready() {
-      audio.removeEventListener("canplay", ready);
-      audio.play().then(function() {
-        disc.classList.add("spinning");
-      }).catch(function() {
-        disc.classList.add("spinning");
-      });
-    }, { once: true });
-    // 兜底：3秒后还没触发就强制播
-    setTimeout(function() {
-      if (audio.paused) {
-        audio.play().then(function() {
-          disc.classList.add("spinning");
-        }).catch(function() {
-          disc.classList.add("spinning");
-        });
-      }
-    }, 3000);
   }
 
   audio.addEventListener("ended", function() {
@@ -677,35 +664,29 @@
       songList = MOODS[mood];
     }
     var chosen = songList && songList.length > 0 ? pick(songList) : null;
-    if (chosen) {
-      // 立即设 src + load，iOS 才能在后续 play
-      audio.src = chosen.file;
-      audio.load();
-    }
 
-    // Step 1: 其他泡泡碎裂 (延迟一点让 active 渲染)
+    // 立刻播放（在手势内，iOS 兼容）
+    if (chosen) playSong(chosen);
+
+    // 动效异步进行，不影响播放
     requestAnimationFrame(function() {
       allBtns.forEach(function(b) {
         if (b !== btn) b.classList.add("shattering");
       });
 
-      // Step 2: 选中泡泡放大 + 播放 (1s后)
       setTimeout(function() {
         btn.classList.remove("active");
         btn.classList.add("expanding");
-        if (chosen) playSong(chosen);
 
-        // 放大到中段淡出网格
         setTimeout(function() {
           moodGrid.classList.add("fading");
         }, 1200);
 
-        // Step 3: 播放面板浮现 (在放大快结束时)
         setTimeout(function() {
           playerPanel.classList.add("revealed");
           isTransitioning = false;
         }, 1800);
-      }, 1000);
+      }, 800);
     });
   });
 
