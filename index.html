@@ -414,27 +414,27 @@
    *  30首歌的心情映射 & 悄悄话
    *  每首歌需将对应 mp3 放在 music/ 目录下。
    *  ================================================================
-   *  格式: { file: "music/xxx.mp3", song: "歌名", whisper: "悄悄话" }
+   *  格式: { file: "music/xxx.m4a", song: "歌名", whisper: "悄悄话" }
    *  ================================================================ */
   var MOODS = {
 
     /* ------ 🌙 有点累 ------ */
     tired: [
-      { file: "music/daoshu.mp3",             song: "倒数",
+      { file: "music/daoshu.m4a",             song: "倒数",
         whisper: "累了就停下来数一数心跳。邓紫棋说「时针一直倒数着」，但在我的时间里，你可以永远不赶路。" },
-      { file: "music/touming.mp3",            song: "透明",
+      { file: "music/touming.m4a",            song: "透明",
         whisper: "有时候累了反而看得更清楚。你知道吗，在你面前我从来不想透明——我想被你看见。" },
-      { file: "music/henjiuyihou.mp3",        song: "很久以后",
+      { file: "music/henjiuyihou.m4a",        song: "很久以后",
         whisper: "很久以后回头看，今天的疲惫也会变成温柔的回忆。我会在那个「很久以后」等你。" }
     ],
 
     /* ------ 💭 很想你 ------ */
     miss: [
-      { file: "music/guangnianzhiwai.mp3",    song: "光年之外",
+      { file: "music/guangnianzhiwai.m4a",    song: "光年之外",
         whisper: "想念可以跨越光年。虽然我们不总是见面，但每次想到你，都觉得宇宙也没那么大了。" },
-      { file: "music/duoyuan.mp3",            song: "多远都要在一起",
+      { file: "music/duoyuan.m4a",            song: "多远都要在一起",
         whisper: "邓紫棋唱距离不是问题，我也想对你说这句话。多远，都在心里。" },
-      { file: "music/xihuanni.mp3",           song: "喜欢你",
+      { file: "music/xihuanni.m4a",           song: "喜欢你",
         whisper: "喜欢你，这三个字很简单，但每次想到你的时候，它们就有了特别的分量。" }
     ],
 
@@ -442,109 +442,109 @@
     courage: [
       { file: "music/xindexintiao.m4a",       song: "新的心跳",
         whisper: "每次心跳都是新的开始。我相信你可以，因为你是那种能让自己发光的人。" },
-      { file: "music/walkonwater.mp3",        song: "Walk on Water",
+      { file: "music/walkonwater.m4a",        song: "Walk on Water",
         whisper: "连水面都能走过，还有什么不能面对呢？你比你想象中勇敢得多。" },
-      { file: "music/motian.mp3",             song: "来自天堂的魔鬼",
+      { file: "music/motian.m4a",             song: "来自天堂的魔鬼",
         whisper: "勇气不是没有恐惧，而是带着恐惧依然前行。你可以摇摆，但别后退。" }
     ],
 
     /* ------ ☀️ 小开心 ------ */
     happy: [
-      { file: "music/haoxiang.mp3",           song: "好想好想你",
+      { file: "music/haoxiang.m4a",           song: "好想好想你",
         whisper: "开心的时候连空气都是甜的。每次看到你笑，就觉得今天已经很值得。" },
-      { file: "music/tonghua.mp3",            song: "另一个童话",
+      { file: "music/tonghua.m4a",            song: "另一个童话",
         whisper: "你的小开心就是我的童话。不用很大，一点点的快乐就能照亮一整天。" },
-      { file: "music/chabuduo.mp3",           song: "差不多姑娘",
+      { file: "music/chabuduo.m4a",           song: "差不多姑娘",
         whisper: "你才不是差不多姑娘。你笑起来的时候，世界都差你一点。" }
     ],
 
     /* ------ 🌧️ 有点雨 ------ */
     rain: [
-      { file: "music/paomo.mp3",              song: "泡沫",
+      { file: "music/paomo.m4a",              song: "泡沫",
         whisper: "雨会停，泡沫会散，但阳光一定会再来。在下雨的时候，我陪你等彩虹。" },
-      { file: "music/shunjian.mp3",           song: "瞬间",
+      { file: "music/shunjian.m4a",           song: "瞬间",
         whisper: "有些瞬间会下雨，但雨滴落下的每个瞬间，也是天空在和大地说话。你的心情值得被听见。" },
-      { file: "music/zaijian.mp3",            song: "再见",
+      { file: "music/zaijian.m4a",            song: "再见",
         whisper: "把不开心说再见，给美好留一点空间。雨后的空气，最干净了。" }
     ],
 
     /* ------ 🔥 需要燃 ------ */
     fire: [
-      { file: "music/motion.mp3",             song: "摩天动物园",
+      { file: "music/motion.m4a",             song: "摩天动物园",
         whisper: "在这个大世界里，做那只不被驯服的动物吧。你的棱角就是你的光。" },
-      { file: "music/chaonengli.mp3",         song: "超能力",
+      { file: "music/chaonengli.m4a",         song: "超能力",
         whisper: "别怀疑，你本身就有超能力——做你自己这件事，谁也取代不了。" },
-      { file: "music/pandeng.mp3",            song: "攀登",
+      { file: "music/pandeng.m4a",            song: "攀登",
         whisper: "所有的山峰都是给攀登者准备的。你已经在上坡了，每一步都算数。" }
     ],
 
     /* ------ 💪 偷偷努力 ------ */
     effort: [
-      { file: "music/yilunifeng.mp3",         song: "一路逆风",
+      { file: "music/yilunifeng.m4a",         song: "一路逆风",
         whisper: "逆风的方向，更适合飞翔。我看到了你在默默努力的样子，很美。" },
-      { file: "music/ouer.mp3",               song: "偶尔",
+      { file: "music/ouer.m4a",               song: "偶尔",
         whisper: "偶尔也给自己一点掌声吧。你偷偷努力的样子，真的很耀眼。" },
-      { file: "music/pandeng.mp3",            song: "攀登",
+      { file: "music/pandeng.m4a",            song: "攀登",
         whisper: "不用告诉所有人你在爬山，一步一步走到山顶，他们自然就看到了。" }
     ],
 
     /* ------ 🌸 很感性 ------ */
     sentimental: [
-      { file: "music/shuigongzhu.mp3",        song: "睡公主",
+      { file: "music/shuigongzhu.m4a",        song: "睡公主",
         whisper: "感性的人是醒着的做梦人。你的温柔和敏感，恰恰是你最特别的天赋。" },
-      { file: "music/yushi.mp3",              song: "于是",
+      { file: "music/yushi.m4a",              song: "于是",
         whisper: "于是你哭了，于是你笑了，于是这就是真实的你。每一种情绪都值得被珍藏。" },
-      { file: "music/chakekaojin.mp3",        song: "查克靠近",
+      { file: "music/chakekaojin.m4a",        song: "查克靠近",
         whisper: "像查克靠近一样，慢慢靠近自己的心。感性不是弱点，是你能感受更多。" }
     ],
 
     /* ------ 🌠 求抱抱 ------ */
     hug: [
-      { file: "music/haoxiang.mp3",           song: "好想好想你",
+      { file: "music/haoxiang.m4a",           song: "好想好想你",
         whisper: "隔着屏幕给你一个大大的拥抱。虽然现在碰不到，但这份温暖是真的。" },
-      { file: "music/duoyuan.mp3",            song: "多远都要在一起",
+      { file: "music/duoyuan.m4a",            song: "多远都要在一起",
         whisper: "距离从来不是问题。需要抱抱的时候，就想想有人在远方惦记着你。" },
-      { file: "music/taohuanuo.mp3",          song: "桃花诺",
+      { file: "music/taohuanuo.m4a",          song: "桃花诺",
         whisper: "桃花诺，是春天最美的约定。就像我对你说的每一句话，都算数。" }
     ],
 
     /* ------ 🌈 不完美 ------ */
     imperfect: [
-      { file: "music/juhao.mp3",              song: "句号",
+      { file: "music/juhao.m4a",              song: "句号",
         whisper: "有些事画上句号，是为了给新的开始留白。不完美也是一种完美。" },
-      { file: "music/mangdian.mp3",           song: "盲点",
+      { file: "music/mangdian.m4a",           song: "盲点",
         whisper: "你觉得自己不够好的地方，其实在别人眼里刚好是特别之处。包括在我眼里。" },
-      { file: "music/kuaile.mp3",             song: "你不是真正的快乐",
+      { file: "music/kuaile.m4a",             song: "你不是真正的快乐",
         whisper: "不用假装一切都好。在我这里，你可以不完美，可以不快乐，可以做真实的你。" }
     ],
 
     /* ------ 🎂 特别日 ------ */
     special: [
-      { file: "music/qiji.mp3",               song: "奇迹",
+      { file: "music/qiji.m4a",               song: "奇迹",
         whisper: "每一个特别的日子都是一个小小的奇迹。而你的存在，就是最大的那个。" },
-      { file: "music/daoshu.mp3",             song: "倒数",
+      { file: "music/daoshu.m4a",             song: "倒数",
         whisper: "每一个特别的日子都在倒数着到来。但我希望今天能慢一点过，让你记得久一点。" },
-      { file: "music/danxing.mp3",            song: "单行的轨道",
+      { file: "music/danxing.m4a",            song: "单行的轨道",
         whisper: "特别的日子像单行轨道，一直往前走。但今天，我想让你停下来享受这一刻。" }
     ],
 
     /* ------ 💤 失眠 ------ */
     insomnia: [
-      { file: "music/touming.mp3",            song: "透明",
+      { file: "music/touming.m4a",            song: "透明",
         whisper: "深夜最清醒，也最容易想很多。但没关系，困了就睡，睡不着有我陪。" },
-      { file: "music/henjiuyihou.mp3",        song: "很久以后",
+      { file: "music/henjiuyihou.m4a",        song: "很久以后",
         whisper: "失眠是因为心里装着太多事。试着放下一些，很久以后你会感谢今晚的这份放松。" },
-      { file: "music/allaboutu.mp3",          song: "All About U",
+      { file: "music/allaboutu.m4a",          song: "All About U",
         whisper: "夜深了，所有的思绪都是关于你。那就让这首歌陪你入睡吧，晚安。" }
     ],
 
     /* ------ 🐟 摸鱼中 ------ */
     slacking: [
-      { file: "music/chabuduo.mp3",           song: "差不多姑娘",
+      { file: "music/chabuduo.m4a",           song: "差不多姑娘",
         whisper: "摸鱼也是一种生产力！偶尔放空自己，给大脑充充电，等一下效率更高。" },
-      { file: "music/tonghua.mp3",            song: "另一个童话",
+      { file: "music/tonghua.m4a",            song: "另一个童话",
         whisper: "偷偷摸个鱼，躲进属于自己的童话世界。几分钟而已，老板不会发现的。" },
-      { file: "music/chaonengli.mp3",         song: "超能力",
+      { file: "music/chaonengli.m4a",         song: "超能力",
         whisper: "摸鱼的时候最适合幻想——要是真有超能力，第一件事就是让时间暂停，再摸一会儿。" }
     ],
 
@@ -552,9 +552,9 @@
     offwork: [
       { file: "music/xindexintiao.m4a",       song: "新的心跳",
         whisper: "下班这一刻，心跳都是自由的。把今天的辛苦关在门外，剩下的时间都是你的。" },
-      { file: "music/haoxiang.mp3",           song: "好想好想你",
+      { file: "music/haoxiang.m4a",           song: "好想好想你",
         whisper: "下班了，终于可以不用想工作了。接下来的时间，好好享受属于你的夜晚吧。" },
-      { file: "music/daoshu.mp3",             song: "倒数",
+      { file: "music/daoshu.m4a",             song: "倒数",
         whisper: "倒数三二一，告别今日的忙碌。今天的你也辛苦啦，值得一首好歌。" }
     ]
   };
