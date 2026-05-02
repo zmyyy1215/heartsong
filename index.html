@@ -573,20 +573,42 @@
   var audioUnlocked   = false;
   var isTransitioning = false;
 
-  /* ========== 环境 BGM ========== */
+  /* ========== 环境 BGM（淡入淡出） ========== */
   var bgmAudio = document.getElementById("bgmAudio");
-  bgmAudio.volume = 0.10;
+  var bgmBaseVolume = 0.10;
+  var bgmFadeTimer = null;
+  bgmAudio.volume = 0;
 
   function startBGM() {
     bgmAudio.play().catch(function(){});
+    fadeBGM(bgmBaseVolume, 3000); // 3秒渐入
   }
 
-  function pauseBGM() {
-    bgmAudio.pause();
+  function fadeOutBGM() {
+    fadeBGM(0, 2000); // 2秒渐出
   }
 
-  function resumeBGM() {
-    bgmAudio.play().catch(function(){});
+  function fadeInBGM() {
+    fadeBGM(bgmBaseVolume, 2500); // 2.5秒渐入
+  }
+
+  function fadeBGM(targetVol, duration) {
+    if (bgmFadeTimer) clearInterval(bgmFadeTimer);
+    var startVol = bgmAudio.volume;
+    var startTime = Date.now();
+    bgmFadeTimer = setInterval(function() {
+      var elapsed = Date.now() - startTime;
+      var progress = Math.min(elapsed / duration, 1);
+      // ease-in-out
+      var eased = progress < 0.5
+        ? 2 * progress * progress
+        : 1 - Math.pow(-2 * progress + 2, 2) / 2;
+      bgmAudio.volume = startVol + (targetVol - startVol) * eased;
+      if (progress >= 1) {
+        clearInterval(bgmFadeTimer);
+        bgmFadeTimer = null;
+      }
+    }, 50);
   }
 
   /* ========== 辅助 ========== */
@@ -606,7 +628,7 @@
 
   function playSong(songData) {
     stopAndReset();
-    pauseBGM();
+    fadeOutBGM();
     songNameEl.textContent = songData.song;
     audio.src = songData.file;
     currentAudioSrc = songData.file;
@@ -711,22 +733,28 @@
       // 面板开始淡出
       playerPanel.classList.add("rewinding");
       stopAndReset();
-      resumeBGM();
+      fadeInBGM();
       songNameEl.textContent = "";
       whisperEl.classList.remove("show");
       whisperEl.textContent = "";
       isTransitioning = true;
 
-      // 淡出完成后重置泡泡（禁用过渡，避免缩放弹跳）
+      // 淡出完成后重置泡泡（禁用过渡和动画，避免弹跳）
       setTimeout(function() {
         playerPanel.classList.remove("revealed", "rewinding");
         disc.classList.remove("rewinding");
         var allBtns = moodGrid.querySelectorAll(".mood-btn");
-        allBtns.forEach(function(b) { b.classList.remove("active", "shattering", "expanding"); });
+        // 禁止所有过渡后再移除类
+        allBtns.forEach(function(b) {
+          b.style.transition = "none";
+          b.classList.remove("active", "shattering", "expanding");
+        });
         moodGrid.style.transition = "none";
         moodGrid.classList.remove("fading");
         void moodGrid.offsetWidth;
+        // 恢复过渡
         moodGrid.style.transition = "";
+        allBtns.forEach(function(b) { b.style.transition = ""; });
         isTransitioning = false;
         isRewinding = false;
         rewindHint.style.opacity = "";
