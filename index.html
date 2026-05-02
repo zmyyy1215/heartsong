@@ -404,7 +404,7 @@
 
 </div>
 
-<audio id="audio" preload="none"></audio>
+<audio id="audio" preload="auto"></audio>
 <audio id="bgmAudio" preload="auto" loop src="music/bgm_silence.mp3"></audio>
 
 <script>
@@ -573,7 +573,7 @@
   var audioUnlocked   = false;
   var isTransitioning = false;
 
-  /* ========== 环境 BGM ========== */
+  /* ========== 环境 BGM（始终播放，只控音量） ========== */
   var bgmAudio = document.getElementById("bgmAudio");
   var bgmTargetVol = 0.20;
   var bgmFadeTimer = null;
@@ -581,22 +581,12 @@
 
   function startBGM() {
     bgmAudio.volume = bgmTargetVol;
-    // 必须在手势内调用 play（移动端限制）
     bgmAudio.play().catch(function(){});
   }
 
-  function stopBGM() {
+  function muteBGM() {
     if (bgmFadeTimer) { clearInterval(bgmFadeTimer); bgmFadeTimer = null; }
-    bgmAudio.pause();
-    bgmAudio.currentTime = 0;
     bgmAudio.volume = 0;
-  }
-
-  /* 在手势内激活播放，后续只做音量渐变 */
-  function activateBGM() {
-    bgmAudio.volume = 0;
-    bgmAudio.currentTime = 0;
-    bgmAudio.play().catch(function(){});
   }
 
   function fadeInBGM() {
@@ -607,7 +597,7 @@
       var p = Math.min((Date.now() - startTime) / duration, 1);
       bgmAudio.volume = bgmTargetVol * p;
       if (p >= 1) { clearInterval(bgmFadeTimer); bgmFadeTimer = null; }
-    }, 100); // 移动端放宽间隔，避免节流
+    }, 100);
   }
 
   /* ========== 辅助 ========== */
@@ -627,7 +617,7 @@
 
   function playSong(songData) {
     stopAndReset();
-    stopBGM();
+    muteBGM();
     songNameEl.textContent = songData.song;
     audio.src = songData.file;
     currentAudioSrc = songData.file;
@@ -722,9 +712,6 @@
     if (isTransitioning || !playerPanel.classList.contains("revealed")) return;
     e.preventDefault();
     e.stopPropagation();
-
-    // 立刻在手势内激活 BGM 播放（iOS 要求）
-    activateBGM();
 
     // 开始倒转
     disc.classList.add("rewinding");
