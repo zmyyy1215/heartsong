@@ -575,28 +575,35 @@
 
   /* ========== 环境 BGM ========== */
   var bgmAudio = document.getElementById("bgmAudio");
-  bgmAudio.volume = 0.06;
-  // 初始静音，首次start后设为目标音量
-  var bgmStarted = false;
+  var bgmTargetVol = 0.06;
+  var bgmFadeTimer = null;
+  bgmAudio.volume = 0;
 
   function startBGM() {
-    if (bgmStarted) return;
-    bgmAudio.volume = 0.06;
+    bgmAudio.volume = bgmTargetVol;
     bgmAudio.play().catch(function(){});
-    bgmStarted = true;
   }
 
   function stopBGM() {
+    if (bgmFadeTimer) { clearInterval(bgmFadeTimer); bgmFadeTimer = null; }
     bgmAudio.pause();
     bgmAudio.currentTime = 0;
-    bgmStarted = false;
+    bgmAudio.volume = 0;
   }
 
-  function resumeBGM() {
-    bgmAudio.volume = 0.06;
+  function fadeInBGM() {
+    if (bgmFadeTimer) clearInterval(bgmFadeTimer);
+    bgmAudio.volume = 0;
     bgmAudio.currentTime = 0;
     bgmAudio.play().catch(function(){});
-    bgmStarted = true;
+    // 3秒内从 0 渐强到 6%
+    var startTime = Date.now();
+    var duration = 3000;
+    bgmFadeTimer = setInterval(function() {
+      var p = Math.min((Date.now() - startTime) / duration, 1);
+      bgmAudio.volume = bgmTargetVol * p * p; // 先慢后快
+      if (p >= 1) { clearInterval(bgmFadeTimer); bgmFadeTimer = null; }
+    }, 60);
   }
 
   /* ========== 辅助 ========== */
@@ -721,7 +728,7 @@
       // 面板开始淡出
       playerPanel.classList.add("rewinding");
       stopAndReset();
-      resumeBGM();
+      fadeInBGM();
       songNameEl.textContent = "";
       whisperEl.classList.remove("show");
       whisperEl.textContent = "";
