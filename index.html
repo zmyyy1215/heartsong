@@ -598,7 +598,7 @@
     bgmAudio.play().catch(function(){});
     // 3秒内从 0 渐强到 6%
     var startTime = Date.now();
-    var duration = 3000;
+    var duration = 5000;
     bgmFadeTimer = setInterval(function() {
       var p = Math.min((Date.now() - startTime) / duration, 1);
       bgmAudio.volume = bgmTargetVol * p * p; // 先慢后快
