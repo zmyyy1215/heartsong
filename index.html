@@ -613,13 +613,25 @@
     songNameEl.textContent = songData.song;
     audio.src = songData.file;
     currentAudioSrc = songData.file;
-    var playPromise = audio.play();
-    if (playPromise !== undefined) {
-      playPromise.then(function() {
-        disc.classList.add("spinning");
-      }).catch(function(err) {
-        console.log("播放失败: " + err.message);
-        disc.classList.add("spinning");
+    audio.load(); // iOS 显式加载
+    // iOS 有时 load 未完成 play 就调用，监听 ready 后再播
+    var tryPlay = function() {
+      var p = audio.play();
+      if (p !== undefined) {
+        p.then(function() {
+          disc.classList.add("spinning");
+        }).catch(function(err) {
+          console.log("播放失败: " + err.message);
+          disc.classList.add("spinning");
+        });
+      }
+    };
+    if (audio.readyState >= 2) {
+      tryPlay();
+    } else {
+      audio.addEventListener("canplay", function ready() {
+        audio.removeEventListener("canplay", ready);
+        tryPlay();
       });
     }
     showWhisper(songData.whisper);
