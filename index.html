@@ -613,20 +613,25 @@
     songNameEl.textContent = songData.song;
     currentAudioSrc = songData.file;
     showWhisper(songData.whisper);
-    var retries = 0;
-    var tryPlay = function() {
-      var p = audio.play();
-      if (p !== undefined) {
-        p.then(function() {
+    // 等缓冲足够再播，避免卡顿
+    audio.addEventListener("canplay", function ready() {
+      audio.removeEventListener("canplay", ready);
+      audio.play().then(function() {
+        disc.classList.add("spinning");
+      }).catch(function() {
+        disc.classList.add("spinning");
+      });
+    }, { once: true });
+    // 兜底：3秒后还没触发就强制播
+    setTimeout(function() {
+      if (audio.paused) {
+        audio.play().then(function() {
           disc.classList.add("spinning");
         }).catch(function() {
-          retries++;
-          if (retries <= 3) setTimeout(tryPlay, 300);
-          else disc.classList.add("spinning");
+          disc.classList.add("spinning");
         });
       }
-    };
-    tryPlay();
+    }, 3000);
   }
 
   audio.addEventListener("ended", function() {
