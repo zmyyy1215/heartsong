@@ -412,7 +412,7 @@
 
   /* ================================================================
    *  30首歌的心情映射 & 悄悄话
-   *  每首歌需将对应 mp3 放在 music/ 目录下。
+   *  每首歌需将对应 m4a 放在 music/ 目录下。
    *  ================================================================
    *  格式: { file: "music/xxx.m4a", song: "歌名", whisper: "悄悄话" }
    *  ================================================================ */
@@ -594,7 +594,6 @@
     showWhisper(songData.whisper);
 
     audio.src = songData.file;
-    audio.load();
     audio.play().then(function() {
       disc.classList.add("spinning");
     }).catch(function() {
