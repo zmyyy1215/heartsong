@@ -571,6 +571,7 @@
 
   var audioUnlocked   = false;
   var isTransitioning = false;
+  var transLockTime   = 0;
 
   /* ========== 辅助 ========== */
   function pick(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
@@ -587,39 +588,17 @@
     whisperEl.classList.add("show");
   }
 
-  var retryCount = 0;
-  var retryMax = 2;
-
   function playSong(songData) {
     stopAndReset();
     stopBGM();
-    retryCount = 0;
     songNameEl.textContent = songData.song;
     showWhisper(songData.whisper);
-    tryPlay(songData);
-  }
 
-  function tryPlay(songData) {
     audio.src = songData.file;
     audio.play().then(function() {
       disc.classList.add("spinning");
     }).catch(function() {
-      retryCount++;
-      if (retryCount <= retryMax) {
-        // 重设 src 强制重新加载
-        setTimeout(function() {
-          audio.src = "";
-          audio.src = songData.file;
-          audio.play().then(function() {
-            disc.classList.add("spinning");
-          }).catch(function() {
-            disc.classList.add("spinning");
-          });
-        }, 1000 * retryCount);
-      } else {
-        disc.classList.add("spinning");
-        showWhisper((songData.whisper || "") + "\n\n（网络不太好，试试倒带后再点一次吧）");
-      }
+      disc.classList.add("spinning");
     });
   }
 
@@ -635,7 +614,17 @@
   /* ========== 选中泡泡 → 碎裂 → 展开 → 显示播放器 ========== */
   moodGrid.addEventListener("click", function(e) {
     var btn = e.target.closest(".mood-btn");
-    if (!btn || isTransitioning) return;
+    if (!btn) return;
+    // 卡住超过 8 秒自动解锁
+    if (isTransitioning) {
+      if (Date.now() - transLockTime < 8000) return;
+      isTransitioning = false;
+      playerPanel.classList.remove("revealed", "rewinding");
+      disc.classList.remove("rewinding");
+      moodGrid.classList.remove("fading");
+      var stuckBtns = moodGrid.querySelectorAll(".mood-btn");
+      stuckBtns.forEach(function(b) { b.classList.remove("active", "shattering", "expanding"); b.style.transition = ""; });
+    }
 
     var mood = btn.getAttribute("data-mood");
 
@@ -646,6 +635,7 @@
     // 标记选中
     btn.classList.add("active");
     isTransitioning = true;
+    transLockTime = Date.now();
 
     // 在手势内选歌 + 预加载（iOS 权限要求）
     var songList;
@@ -715,6 +705,7 @@
       whisperEl.classList.remove("show");
       whisperEl.textContent = "";
       isTransitioning = true;
+      transLockTime = Date.now();
 
       // 淡出完成后重置泡泡（禁用过渡和动画，避免弹跳）
       setTimeout(function() {
