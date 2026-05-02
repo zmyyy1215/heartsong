@@ -373,13 +373,6 @@
   }
 
   /* 底部 */
-  .footer {
-    margin-top: 28px;
-    color: rgba(74,32,64,0.35);
-    font-size: 11px; font-weight: 400;
-    letter-spacing: 2px; text-align: center;
-  }
-
   @media (max-width: 360px) {
     .title { font-size: 22px; }
     .disc-wrapper { width: 160px; height: 160px; }
@@ -438,7 +431,6 @@
   </div>
   </div><!-- /stage -->
 
-  <div class="footer">把耳朵借我几分钟，就给你听。</div>
 </div>
 
 <audio id="audio" preload="none"></audio>
@@ -607,7 +599,57 @@
 
   var currentAudioSrc = null;
   var audioUnlocked   = false;
-  var isTransitioning = false; // 动画进行中，禁止点击
+  var isTransitioning = false;
+
+  /* ========== 环境 BGM（Web Audio API 柔和铺垫） ========== */
+  var bgmCtx      = null;
+  var bgmGain     = null;
+  var bgmPlaying  = false;
+
+  function startBGM() {
+    if (bgmPlaying) return;
+    try {
+      bgmCtx = new (window.AudioContext || window.webkitAudioContext)();
+      bgmGain = bgmCtx.createGain();
+      bgmGain.gain.value = 0.06; // 非常轻
+      bgmGain.connect(bgmCtx.destination);
+
+      // 双振荡器：轻微失谐制造温暖感
+      [261.63, 329.63].forEach(function(freq) {  // C4 + E4
+        var osc = bgmCtx.createOscillator();
+        var filt = bgmCtx.createBiquadFilter();
+        osc.type = "sine";
+        osc.frequency.value = freq;
+        filt.type = "lowpass";
+        filt.frequency.value = 400;  // 闷一点
+        filt.Q.value = 0.5;
+        osc.connect(filt);
+        filt.connect(bgmGain);
+        osc.start();
+      });
+      bgmPlaying = true;
+    } catch(e) { /* 静默失败 */ }
+  }
+
+  function stopBGM() {
+    if (bgmCtx && bgmCtx.state !== "closed") {
+      bgmCtx.close().catch(function(){});
+      bgmCtx = null;
+      bgmPlaying = false;
+    }
+  }
+
+  function pauseBGM() {
+    if (bgmCtx && bgmCtx.state === "running") {
+      bgmCtx.suspend().catch(function(){});
+    }
+  }
+
+  function resumeBGM() {
+    if (bgmCtx && bgmCtx.state === "suspended") {
+      bgmCtx.resume().catch(function(){});
+    }
+  }
 
   /* ========== 辅助 ========== */
   function pick(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
@@ -626,6 +668,7 @@
 
   function playSong(songData) {
     stopAndReset();
+    pauseBGM();
     songNameEl.textContent = songData.song;
     audio.src = songData.file;
     currentAudioSrc = songData.file;
@@ -730,18 +773,22 @@
       // 面板开始淡出
       playerPanel.classList.add("rewinding");
       stopAndReset();
+      resumeBGM();
       songNameEl.textContent = "";
       whisperEl.classList.remove("show");
       whisperEl.textContent = "";
       isTransitioning = true;
 
-      // 淡出完成后重置泡泡
+      // 淡出完成后重置泡泡（禁用过渡，避免缩放弹跳）
       setTimeout(function() {
         playerPanel.classList.remove("revealed", "rewinding");
         disc.classList.remove("rewinding");
         var allBtns = moodGrid.querySelectorAll(".mood-btn");
         allBtns.forEach(function(b) { b.classList.remove("active", "shattering", "expanding"); });
+        moodGrid.style.transition = "none";
         moodGrid.classList.remove("fading");
+        void moodGrid.offsetWidth;
+        moodGrid.style.transition = "";
         isTransitioning = false;
         isRewinding = false;
         rewindHint.style.opacity = "";
@@ -776,6 +823,7 @@
       audio.pause(); audio.currentTime = 0; audio.volume = 1;
     }).catch(function() { audio.volume = 1; });
     overlay.classList.add("hidden");
+    startBGM();
   });
 
 })();
