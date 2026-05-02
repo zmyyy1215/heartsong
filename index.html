@@ -404,7 +404,7 @@
 
 </div>
 
-<audio id="audio" preload="metadata"></audio>
+<audio id="audio" preload="none"></audio>
 <audio id="bgmAudio" preload="auto" loop src="music/bgm_silence.mp3"></audio>
 
 <script>
@@ -613,19 +613,15 @@
     songNameEl.textContent = songData.song;
     audio.src = songData.file;
     currentAudioSrc = songData.file;
-    audio.load();
-    // 短暂延迟确保 load 开始后再 play
-    setTimeout(function() {
-      var p = audio.play();
-      if (p !== undefined) {
-        p.then(function() {
-          disc.classList.add("spinning");
-        }).catch(function(err) {
-          console.log("播放失败: " + err.message);
-          disc.classList.add("spinning");
-        });
-      }
-    }, 100);
+    var playPromise = audio.play();
+    if (playPromise !== undefined) {
+      playPromise.then(function() {
+        disc.classList.add("spinning");
+      }).catch(function(err) {
+        console.log("播放失败: " + err.message);
+        disc.classList.add("spinning");
+      });
+    }
     showWhisper(songData.whisper);
   }
 
