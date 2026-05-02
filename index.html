@@ -404,7 +404,7 @@
 
 </div>
 
-<audio id="audio" preload="none"></audio>
+<audio id="audio" preload="auto"></audio>
 <audio id="bgmAudio" preload="auto" loop src="music/bgm_silence.mp3"></audio>
 
 <script>
@@ -588,8 +588,6 @@
     whisperEl.classList.add("show");
   }
 
-  var activeAudio = null;
-
   function playSong(songData) {
     stopAndReset();
     stopBGM();
@@ -597,17 +595,18 @@
     currentAudioSrc = songData.file;
     showWhisper(songData.whisper);
 
-    var a = new Audio(songData.file);
-    activeAudio = a;
-    a.play().then(function() {
+    audio.src = songData.file;
+    audio.load();
+    audio.play().then(function() {
       disc.classList.add("spinning");
     }).catch(function() {
       disc.classList.add("spinning");
     });
-    a.addEventListener("ended", function() {
-      disc.classList.remove("spinning");
-    });
   }
+
+  audio.addEventListener("ended", function() {
+    disc.classList.remove("spinning");
+  });
 
   /* ========== BGM ========== */
   var bgmAudio = document.getElementById("bgmAudio");
