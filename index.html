@@ -587,17 +587,39 @@
     whisperEl.classList.add("show");
   }
 
+  var retryCount = 0;
+  var retryMax = 2;
+
   function playSong(songData) {
     stopAndReset();
     stopBGM();
+    retryCount = 0;
     songNameEl.textContent = songData.song;
     showWhisper(songData.whisper);
+    tryPlay(songData);
+  }
 
+  function tryPlay(songData) {
     audio.src = songData.file;
     audio.play().then(function() {
       disc.classList.add("spinning");
     }).catch(function() {
-      disc.classList.add("spinning");
+      retryCount++;
+      if (retryCount <= retryMax) {
+        // 重设 src 强制重新加载
+        setTimeout(function() {
+          audio.src = "";
+          audio.src = songData.file;
+          audio.play().then(function() {
+            disc.classList.add("spinning");
+          }).catch(function() {
+            disc.classList.add("spinning");
+          });
+        }, 1000 * retryCount);
+      } else {
+        disc.classList.add("spinning");
+        showWhisper((songData.whisper || "") + "\n\n（网络不太好，试试倒带后再点一次吧）");
+      }
     });
   }
 
