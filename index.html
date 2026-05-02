@@ -405,6 +405,7 @@
 </div>
 
 <audio id="audio" preload="none"></audio>
+<audio id="bgmAudio" preload="none" loop src="music/bgm_silence.mp3"></audio>
 
 <script>
 (function() {
@@ -572,54 +573,20 @@
   var audioUnlocked   = false;
   var isTransitioning = false;
 
-  /* ========== 环境 BGM（Web Audio API 柔和铺垫） ========== */
-  var bgmCtx      = null;
-  var bgmGain     = null;
-  var bgmPlaying  = false;
+  /* ========== 环境 BGM ========== */
+  var bgmAudio = document.getElementById("bgmAudio");
+  bgmAudio.volume = 0.18;
 
   function startBGM() {
-    if (bgmPlaying) return;
-    try {
-      bgmCtx = new (window.AudioContext || window.webkitAudioContext)();
-      bgmGain = bgmCtx.createGain();
-      bgmGain.gain.value = 0.06; // 非常轻
-      bgmGain.connect(bgmCtx.destination);
-
-      // 双振荡器：轻微失谐制造温暖感
-      [261.63, 329.63].forEach(function(freq) {  // C4 + E4
-        var osc = bgmCtx.createOscillator();
-        var filt = bgmCtx.createBiquadFilter();
-        osc.type = "sine";
-        osc.frequency.value = freq;
-        filt.type = "lowpass";
-        filt.frequency.value = 400;  // 闷一点
-        filt.Q.value = 0.5;
-        osc.connect(filt);
-        filt.connect(bgmGain);
-        osc.start();
-      });
-      bgmPlaying = true;
-    } catch(e) { /* 静默失败 */ }
-  }
-
-  function stopBGM() {
-    if (bgmCtx && bgmCtx.state !== "closed") {
-      bgmCtx.close().catch(function(){});
-      bgmCtx = null;
-      bgmPlaying = false;
-    }
+    bgmAudio.play().catch(function(){});
   }
 
   function pauseBGM() {
-    if (bgmCtx && bgmCtx.state === "running") {
-      bgmCtx.suspend().catch(function(){});
-    }
+    bgmAudio.pause();
   }
 
   function resumeBGM() {
-    if (bgmCtx && bgmCtx.state === "suspended") {
-      bgmCtx.resume().catch(function(){});
-    }
+    bgmAudio.play().catch(function(){});
   }
 
   /* ========== 辅助 ========== */
