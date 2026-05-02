@@ -572,62 +572,6 @@
   var audioUnlocked   = false;
   var isTransitioning = false;
 
-  /* ========== Blob 缓存 + 后台预加载 ========== */
-  var blobCache = {};
-  var preloadQueue = [];
-  var isPreloading = false;
-
-  function cacheSong(url) {
-    if (blobCache[url]) return Promise.resolve(blobCache[url]);
-    return fetch(url)
-      .then(function(res) {
-        if (!res.ok) throw new Error('status ' + res.status);
-        return res.blob();
-      })
-      .then(function(blob) {
-        blobCache[url] = URL.createObjectURL(blob);
-        return blobCache[url];
-      })
-      .catch(function() {
-        return null; // 静默失败，回退到直接 URL
-      });
-  }
-
-  function preloadNext() {
-    if (isPreloading || preloadQueue.length === 0) return;
-    isPreloading = true;
-    var url = preloadQueue.shift();
-    cacheSong(url).then(function() {
-      isPreloading = false;
-      if (preloadQueue.length > 0) setTimeout(preloadNext, 2000);
-    }).catch(function() {
-      isPreloading = false;
-      if (preloadQueue.length > 0) setTimeout(preloadNext, 3000);
-    });
-  }
-
-  function buildPreloadQueue() {
-    if (preloadQueue.length > 0) return; // 只需构建一次
-    var seen = {};
-    Object.keys(MOODS).forEach(function(key) {
-      if (key === 'random') return;
-      var songs = MOODS[key];
-      if (songs && songs.length > 0 && !seen[songs[0].file]) {
-        seen[songs[0].file] = true;
-        preloadQueue.push(songs[0].file);
-      }
-    });
-    Object.keys(MOODS).forEach(function(key) {
-      if (key === 'random') return;
-      MOODS[key].forEach(function(s) {
-        if (!seen[s.file]) {
-          seen[s.file] = true;
-          preloadQueue.push(s.file);
-        }
-      });
-    });
-  }
-
   /* ========== 辅助 ========== */
   function pick(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
 
@@ -649,21 +593,13 @@
     songNameEl.textContent = songData.song;
     showWhisper(songData.whisper);
 
-    var url = songData.file;
-    var playSrc = blobCache[url] || url;
-
-    audio.src = playSrc;
-    // 缓存命中则无需 load()，直接播放；未命中则显式 load 触发下载
-    if (!blobCache[url]) audio.load();
-
+    audio.src = songData.file;
+    audio.load();
     audio.play().then(function() {
       disc.classList.add("spinning");
     }).catch(function() {
       disc.classList.add("spinning");
     });
-
-    // 后台缓存：首播后存入 blob，下次同曲零延迟
-    if (!blobCache[url]) cacheSong(url);
   }
 
   audio.addEventListener("ended", function() {
@@ -810,9 +746,6 @@
     }).catch(function() { audio.volume = 1; });
     overlay.classList.add("hidden");
     startBGM();
-    // 启动后台预加载
-    buildPreloadQueue();
-    preloadNext();
   });
 
 })();
