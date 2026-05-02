@@ -575,7 +575,7 @@
 
   /* ========== 环境 BGM ========== */
   var bgmAudio = document.getElementById("bgmAudio");
-  var bgmTargetVol = 0.01;
+  var bgmTargetVol = 0.08;
   var bgmFadeTimer = null;
   bgmAudio.volume = 0;
 
@@ -601,7 +601,7 @@
     var duration = 5000;
     bgmFadeTimer = setInterval(function() {
       var p = Math.min((Date.now() - startTime) / duration, 1);
-      bgmAudio.volume = bgmTargetVol * p * p; // 先慢后快
+      bgmAudio.volume = bgmTargetVol * p; // 线性渐强
       if (p >= 1) { clearInterval(bgmFadeTimer); bgmFadeTimer = null; }
     }, 60);
   }
