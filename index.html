@@ -115,6 +115,8 @@
       inset 0 1px 2px rgba(255,255,255,0.5),
       inset 0 -2px 4px rgba(0,0,0,0.06);
     -webkit-tap-highlight-color: transparent;
+    -webkit-user-select: none; user-select: none;
+    -webkit-touch-callout: none;
     transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1),
                 opacity 0.4s ease, box-shadow 0.4s ease,
                 background 0.4s ease, border-color 0.4s ease;
@@ -237,6 +239,10 @@
   .disc-wrapper { width: 200px; height: 200px; margin: 0 0 18px; position: relative; display: flex; align-items: center; justify-content: center; }
   .disc {
     width: 180px; height: 180px; border-radius: 50%; position: relative;
+    -webkit-tap-highlight-color: transparent;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none; user-select: none;
+    touch-action: manipulation;
     /* 紫色唱片：浅紫 → 中紫 → 深紫的同心圆纹理 */
     background: radial-gradient(circle at 50% 50%,
       #5c3d7a 0%, #4a2d6e 5%, #6b4690 12%,
@@ -667,9 +673,11 @@
   var rewindTimer = null;
   var isRewinding = false;
 
+  disc.addEventListener("contextmenu", function(e) { e.preventDefault(); });
   disc.addEventListener("pointerdown", function(e) {
     if (isTransitioning || !playerPanel.classList.contains("revealed")) return;
     e.preventDefault();
+    e.stopPropagation();
 
     // 开始倒转
     disc.classList.add("rewinding");
