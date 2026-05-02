@@ -405,7 +405,6 @@
 </div>
 
 <audio id="audio" preload="none"></audio>
-<audio id="bgmAudio" preload="auto" loop src="music/bgm_silence.mp3"></audio>
 
 <script>
 (function() {
@@ -573,25 +572,6 @@
   var audioUnlocked   = false;
   var isTransitioning = false;
 
-  /* ========== 环境 BGM ========== */
-  var bgmAudio = document.getElementById("bgmAudio");
-
-  function startBGM() {
-    bgmAudio.play().catch(function(){});
-  }
-
-  function muteBGM() {
-    bgmAudio.pause();
-    bgmAudio.currentTime = 0;
-  }
-
-  function delayedBGM() {
-    setTimeout(function() {
-      bgmAudio.currentTime = 0;
-      bgmAudio.play().catch(function(){});
-    }, 2000);
-  }
-
   /* ========== 辅助 ========== */
   function pick(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
 
@@ -609,7 +589,6 @@
 
   function playSong(songData) {
     stopAndReset();
-    muteBGM();
     songNameEl.textContent = songData.song;
     audio.src = songData.file;
     currentAudioSrc = songData.file;
@@ -700,9 +679,6 @@
     e.preventDefault();
     e.stopPropagation();
 
-    // 在手势内重新激活 BGM（iOS 需要）
-    bgmAudio.load();
-
     // 开始倒转
     disc.classList.add("rewinding");
     rewindHint.style.opacity = "1";
@@ -712,7 +688,6 @@
       // 面板开始淡出
       playerPanel.classList.add("rewinding");
       stopAndReset();
-      delayedBGM();
       songNameEl.textContent = "";
       whisperEl.classList.remove("show");
       whisperEl.textContent = "";
@@ -768,7 +743,6 @@
       audio.pause(); audio.currentTime = 0; audio.volume = 1;
     }).catch(function() { audio.volume = 1; });
     overlay.classList.add("hidden");
-    startBGM();
   });
 
 })();
