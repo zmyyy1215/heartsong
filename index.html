@@ -611,7 +611,7 @@
     stopAndReset();
     muteBGM();
     songNameEl.textContent = songData.song;
-    audio.src = songData.file;
+    // src 已在手势内设好并 load，这里只负责播
     currentAudioSrc = songData.file;
     var playPromise = audio.play();
     if (playPromise !== undefined) {
@@ -651,31 +651,36 @@
     btn.classList.add("active");
     isTransitioning = true;
 
+    // 在手势内选歌 + 预加载（iOS 权限要求）
+    var songList;
+    if (mood === "random") {
+      var allSongs = [];
+      Object.keys(MOODS).forEach(function(key) {
+        allSongs = allSongs.concat(MOODS[key]);
+      });
+      var seen = {};
+      allSongs = allSongs.filter(function(s) {
+        if (seen[s.file]) return false;
+        seen[s.file] = true; return true;
+      });
+      songList = allSongs;
+    } else {
+      songList = MOODS[mood];
+    }
+    var chosen = songList && songList.length > 0 ? pick(songList) : null;
+    if (chosen) {
+      // 立即设 src + load，iOS 才能在后续 play
+      audio.src = chosen.file;
+      audio.load();
+    }
+
     // Step 1: 其他泡泡碎裂 (延迟一点让 active 渲染)
     requestAnimationFrame(function() {
       allBtns.forEach(function(b) {
         if (b !== btn) b.classList.add("shattering");
       });
 
-      // 提前选好歌
-      var songList;
-      if (mood === "random") {
-        var allSongs = [];
-        Object.keys(MOODS).forEach(function(key) {
-          allSongs = allSongs.concat(MOODS[key]);
-        });
-        var seen = {};
-        allSongs = allSongs.filter(function(s) {
-          if (seen[s.file]) return false;
-          seen[s.file] = true; return true;
-        });
-        songList = allSongs;
-      } else {
-        songList = MOODS[mood];
-      }
-      var chosen = songList && songList.length > 0 ? pick(songList) : null;
-
-      // Step 2: 选中泡泡放大 + 立即播放音乐 (1s后)
+      // Step 2: 选中泡泡放大 + 播放 (1s后)
       setTimeout(function() {
         btn.classList.remove("active");
         btn.classList.add("expanding");
@@ -704,6 +709,9 @@
     if (isTransitioning || !playerPanel.classList.contains("revealed")) return;
     e.preventDefault();
     e.stopPropagation();
+
+    // 在手势内重新激活 BGM（iOS 需要）
+    bgmAudio.load();
 
     // 开始倒转
     disc.classList.add("rewinding");
