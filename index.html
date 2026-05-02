@@ -577,7 +577,7 @@
   function pick(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
 
   function stopAndReset() {
-    if (activeAudio) { activeAudio.pause(); activeAudio = null; }
+    audio.pause();
     disc.classList.remove("spinning");
   }
 
