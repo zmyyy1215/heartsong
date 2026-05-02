@@ -611,18 +611,22 @@
     stopAndReset();
     muteBGM();
     songNameEl.textContent = songData.song;
-    // src 已在手势内设好并 load，这里只负责播
     currentAudioSrc = songData.file;
-    var playPromise = audio.play();
-    if (playPromise !== undefined) {
-      playPromise.then(function() {
-        disc.classList.add("spinning");
-      }).catch(function(err) {
-        console.log("播放失败: " + err.message);
-        disc.classList.add("spinning");
-      });
-    }
     showWhisper(songData.whisper);
+    var retries = 0;
+    var tryPlay = function() {
+      var p = audio.play();
+      if (p !== undefined) {
+        p.then(function() {
+          disc.classList.add("spinning");
+        }).catch(function() {
+          retries++;
+          if (retries <= 3) setTimeout(tryPlay, 300);
+          else disc.classList.add("spinning");
+        });
+      }
+    };
+    tryPlay();
   }
 
   audio.addEventListener("ended", function() {
