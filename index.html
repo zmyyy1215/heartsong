@@ -404,7 +404,7 @@
 
 </div>
 
-<audio id="audio" preload="auto"></audio>
+<audio id="audio" preload="metadata"></audio>
 <audio id="bgmAudio" preload="auto" loop src="music/bgm_silence.mp3"></audio>
 
 <script>
@@ -613,9 +613,9 @@
     songNameEl.textContent = songData.song;
     audio.src = songData.file;
     currentAudioSrc = songData.file;
-    audio.load(); // iOS 显式加载
-    // iOS 有时 load 未完成 play 就调用，监听 ready 后再播
-    var tryPlay = function() {
+    audio.load();
+    // 短暂延迟确保 load 开始后再 play
+    setTimeout(function() {
       var p = audio.play();
       if (p !== undefined) {
         p.then(function() {
@@ -625,15 +625,7 @@
           disc.classList.add("spinning");
         });
       }
-    };
-    if (audio.readyState >= 2) {
-      tryPlay();
-    } else {
-      audio.addEventListener("canplay", function ready() {
-        audio.removeEventListener("canplay", ready);
-        tryPlay();
-      });
-    }
+    }, 100);
     showWhisper(songData.whisper);
   }
 
