@@ -573,42 +573,30 @@
   var audioUnlocked   = false;
   var isTransitioning = false;
 
-  /* ========== 环境 BGM（淡入淡出） ========== */
+  /* ========== 环境 BGM ========== */
   var bgmAudio = document.getElementById("bgmAudio");
-  var bgmBaseVolume = 0.10;
-  var bgmFadeTimer = null;
-  bgmAudio.volume = 0;
+  bgmAudio.volume = 0.06;
+  // 初始静音，首次start后设为目标音量
+  var bgmStarted = false;
 
   function startBGM() {
+    if (bgmStarted) return;
+    bgmAudio.volume = 0.06;
     bgmAudio.play().catch(function(){});
-    fadeBGM(bgmBaseVolume, 3000); // 3秒渐入
+    bgmStarted = true;
   }
 
-  function fadeOutBGM() {
-    fadeBGM(0, 2000); // 2秒渐出
+  function stopBGM() {
+    bgmAudio.pause();
+    bgmAudio.currentTime = 0;
+    bgmStarted = false;
   }
 
-  function fadeInBGM() {
-    fadeBGM(bgmBaseVolume, 2500); // 2.5秒渐入
-  }
-
-  function fadeBGM(targetVol, duration) {
-    if (bgmFadeTimer) clearInterval(bgmFadeTimer);
-    var startVol = bgmAudio.volume;
-    var startTime = Date.now();
-    bgmFadeTimer = setInterval(function() {
-      var elapsed = Date.now() - startTime;
-      var progress = Math.min(elapsed / duration, 1);
-      // ease-in-out
-      var eased = progress < 0.5
-        ? 2 * progress * progress
-        : 1 - Math.pow(-2 * progress + 2, 2) / 2;
-      bgmAudio.volume = startVol + (targetVol - startVol) * eased;
-      if (progress >= 1) {
-        clearInterval(bgmFadeTimer);
-        bgmFadeTimer = null;
-      }
-    }, 50);
+  function resumeBGM() {
+    bgmAudio.volume = 0.06;
+    bgmAudio.currentTime = 0;
+    bgmAudio.play().catch(function(){});
+    bgmStarted = true;
   }
 
   /* ========== 辅助 ========== */
@@ -628,7 +616,7 @@
 
   function playSong(songData) {
     stopAndReset();
-    fadeOutBGM();
+    stopBGM();
     songNameEl.textContent = songData.song;
     audio.src = songData.file;
     currentAudioSrc = songData.file;
@@ -733,7 +721,7 @@
       // 面板开始淡出
       playerPanel.classList.add("rewinding");
       stopAndReset();
-      fadeInBGM();
+      resumeBGM();
       songNameEl.textContent = "";
       whisperEl.classList.remove("show");
       whisperEl.textContent = "";
