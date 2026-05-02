@@ -405,6 +405,7 @@
 </div>
 
 <audio id="audio" preload="none"></audio>
+<audio id="bgmAudio" preload="auto" loop src="music/bgm_silence.mp3"></audio>
 
 <script>
 (function() {
@@ -576,7 +577,7 @@
   function pick(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
 
   function stopAndReset() {
-    audio.pause(); audio.currentTime = 0;
+    if (activeAudio) { activeAudio.pause(); activeAudio = null; }
     disc.classList.remove("spinning");
   }
 
@@ -587,29 +588,38 @@
     whisperEl.classList.add("show");
   }
 
+  var activeAudio = null;
+
   function playSong(songData) {
     stopAndReset();
+    stopBGM();
     songNameEl.textContent = songData.song;
-    audio.src = songData.file;
     currentAudioSrc = songData.file;
-    audio.play().then(function() {
+    showWhisper(songData.whisper);
+
+    // 每次 new Audio()，不复用，iOS 更稳定
+    var a = new Audio(songData.file);
+    activeAudio = a;
+    a.play().then(function() {
       disc.classList.add("spinning");
     }).catch(function() {
       disc.classList.add("spinning");
     });
-    showWhisper(songData.whisper);
+    a.addEventListener("ended", function() {
+      disc.classList.remove("spinning");
+    });
+    a.addEventListener("error", function() {
+      disc.classList.remove("spinning");
+      if (whisperEl.textContent && whisperEl.textContent.indexOf("还在路上") === -1) {
+        showWhisper(whisperEl.textContent + "\n\n（这首歌还在路上，先看看这句话吧）");
+      }
+    });
   }
 
-  audio.addEventListener("ended", function() {
-    disc.classList.remove("spinning");
-  });
-
-  audio.addEventListener("error", function() {
-    disc.classList.remove("spinning");
-    if (whisperEl.textContent && whisperEl.textContent.indexOf("还在路上") === -1) {
-      showWhisper(whisperEl.textContent + "\n\n（这首歌还在路上，先看看这句话吧）");
-    }
-  });
+  /* ========== BGM ========== */
+  var bgmAudio = document.getElementById("bgmAudio");
+  function startBGM() { bgmAudio.play().catch(function(){}); }
+  function stopBGM()  { bgmAudio.pause(); bgmAudio.currentTime = 0; }
 
   /* ========== 选中泡泡 → 碎裂 → 展开 → 显示播放器 ========== */
   moodGrid.addEventListener("click", function(e) {
@@ -688,6 +698,8 @@
       // 面板开始淡出
       playerPanel.classList.add("rewinding");
       stopAndReset();
+      bgmAudio.currentTime = 0;
+      bgmAudio.play().catch(function(){});
       songNameEl.textContent = "";
       whisperEl.classList.remove("show");
       whisperEl.textContent = "";
@@ -743,6 +755,7 @@
       audio.pause(); audio.currentTime = 0; audio.volume = 1;
     }).catch(function() { audio.volume = 1; });
     overlay.classList.add("hidden");
+    startBGM();
   });
 
 })();
