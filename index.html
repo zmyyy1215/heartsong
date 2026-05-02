@@ -589,6 +589,7 @@
   }
 
   var activeAudio = null;
+  var activeBlobUrl = null;
 
   function playSong(songData) {
     stopAndReset();
@@ -597,23 +598,32 @@
     currentAudioSrc = songData.file;
     showWhisper(songData.whisper);
 
-    // 每次 new Audio()，不复用，iOS 更稳定
-    var a = new Audio(songData.file);
-    activeAudio = a;
-    a.play().then(function() {
-      disc.classList.add("spinning");
-    }).catch(function() {
-      disc.classList.add("spinning");
-    });
-    a.addEventListener("ended", function() {
-      disc.classList.remove("spinning");
-    });
-    a.addEventListener("error", function() {
-      disc.classList.remove("spinning");
-      if (whisperEl.textContent && whisperEl.textContent.indexOf("还在路上") === -1) {
-        showWhisper(whisperEl.textContent + "\n\n（这首歌还在路上，先看看这句话吧）");
-      }
-    });
+    // fetch 整个文件再播，不依赖流式加载
+    fetch(songData.file)
+      .then(function(res) { return res.blob(); })
+      .then(function(blob) {
+        if (activeBlobUrl) URL.revokeObjectURL(activeBlobUrl);
+        var url = URL.createObjectURL(blob);
+        activeBlobUrl = url;
+        var a = new Audio(url);
+        activeAudio = a;
+        a.play().then(function() {
+          disc.classList.add("spinning");
+        }).catch(function() {
+          disc.classList.add("spinning");
+        });
+        a.addEventListener("ended", function() {
+          disc.classList.remove("spinning");
+        });
+        a.addEventListener("error", function() {
+          disc.classList.remove("spinning");
+          showWhisper((songData.whisper || "") + "\n\n（这首歌还在路上，先看看这句话吧）");
+        });
+      })
+      .catch(function() {
+        disc.classList.remove("spinning");
+        showWhisper((songData.whisper || "") + "\n\n（这首歌还在路上，先看看这句话吧）");
+      });
   }
 
   /* ========== BGM ========== */
