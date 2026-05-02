@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-<title>心声点歌机</title>
+<title>心情点歌台</title>
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -237,40 +237,57 @@
   .disc-wrapper { width: 200px; height: 200px; margin: 0 0 18px; position: relative; display: flex; align-items: center; justify-content: center; }
   .disc {
     width: 180px; height: 180px; border-radius: 50%; position: relative;
+    /* 紫色唱片：浅紫 → 中紫 → 深紫的同心圆纹理 */
     background: radial-gradient(circle at 50% 50%,
-      #1a1a1a 0%, #2a2a2a 8%, #111 15%, #222 22%,
-      #1a1a1a 28%, #2a2a2a 35%, #111 42%,
-      #1a1a1a 48%, #222 55%, #111 62%,
-      #2a2a2a 68%, #1a1a1a 72%);
-    box-shadow: 0 8px 36px rgba(0,0,0,0.5), 0 0 0 4px rgba(0,0,0,0.3), 0 0 0 6px rgba(255,255,255,0.06);
-    overflow: hidden;
+      #5c3d7a 0%, #4a2d6e 5%, #6b4690 12%,
+      #5c3a80 18%, #4a2e6a 25%, #634088 32%,
+      #553878 38%, #4b3070 45%, #5e3d82 52%,
+      #523674 58%, #472c65 65%, #5a3c7e 72%
+    );
+    box-shadow:
+      0 8px 32px rgba(60,20,80,0.35),
+      0 0 0 3px rgba(80,40,100,0.25),
+      0 0 0 5px rgba(255,255,255,0.08);
+    overflow: hidden; cursor: pointer;
   }
   .disc::before {
     content: ""; position: absolute; inset: 0; border-radius: 50%;
-    background: linear-gradient(135deg, rgba(255,255,255,0.1) 0%, transparent 40%, transparent 60%, rgba(255,255,255,0.03) 100%);
+    background: linear-gradient(135deg,
+      rgba(255,255,255,0.12) 0%, transparent 35%,
+      transparent 65%, rgba(200,180,220,0.06) 100%
+    );
     z-index: 2; pointer-events: none;
   }
   .disc.spinning {
     animation: spin 3s linear infinite;
     box-shadow:
-      0 8px 36px rgba(0,0,0,0.5),
-      0 0 0 4px rgba(0,0,0,0.3),
-      0 0 0 6px rgba(255,255,255,0.06),
-      0 0 40px rgba(180,160,200,0.15);
+      0 8px 32px rgba(60,20,80,0.35),
+      0 0 0 3px rgba(80,40,100,0.25),
+      0 0 0 5px rgba(255,255,255,0.08),
+      0 0 45px rgba(150,120,200,0.2);
+  }
+  /* 倒转 */
+  .disc.rewinding {
+    animation: spin 1.2s linear infinite reverse;
+    box-shadow:
+      0 8px 32px rgba(60,20,80,0.35),
+      0 0 0 3px rgba(80,40,100,0.25),
+      0 0 0 5px rgba(255,255,255,0.08),
+      0 0 55px rgba(180,140,220,0.35);
   }
   @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
   .disc-label {
     position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
     width: 60px; height: 60px; border-radius: 50%;
-    background: linear-gradient(135deg, #b8963e, #8a6828);
+    background: linear-gradient(135deg, #9a7ac0, #6b4a90);
     display: flex; align-items: center; justify-content: center;
     font-size: 13px; font-weight: 700; color: #fff;
     text-align: center; line-height: 1.3; letter-spacing: 1px; z-index: 3;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.4), inset 0 1px 2px rgba(255,255,255,0.25);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.3), inset 0 1px 2px rgba(255,255,255,0.3);
   }
   .disc-label::after {
     content: ""; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
-    width: 6px; height: 6px; border-radius: 50%; background: #2a1a08;
+    width: 6px; height: 6px; border-radius: 50%; background: #3a2058;
   }
 
   /* 歌名 */
@@ -294,20 +311,18 @@
   }
   .whisper-box.show { opacity: 1; transform: translateY(0); }
 
-  /* 倒带按钮 */
-  .rewind-btn {
-    margin-top: 18px;
-    width: 44px; height: 44px; border-radius: 50%;
-    border: 1.5px solid rgba(255,255,255,0.4);
-    background: rgba(255,255,255,0.35);
-    backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
-    color: #4a2040; font-size: 18px;
-    display: flex; align-items: center; justify-content: center;
-    cursor: pointer; transition: all 0.3s ease;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
-    -webkit-tap-highlight-color: transparent;
+  /* 倒带提示 */
+  .rewind-hint {
+    margin-top: 14px; font-size: 12px; color: rgba(74,32,64,0.35);
+    letter-spacing: 1px; text-align: center;
+    transition: opacity 0.5s;
   }
-  .rewind-btn:active { transform: scale(0.9); background: rgba(255,255,255,0.55); }
+
+  /* 面板倒带中淡出 */
+  .player-panel.rewinding {
+    opacity: 0; transform: translateY(10px) scale(0.95);
+    transition: all 0.9s ease-out;
+  }
 
   /* 底部 */
   .footer {
@@ -336,8 +351,8 @@
 </div>
 
 <div class="container">
-  <div class="title">🎶 打开我的留声机</div>
-  <div class="subtitle">选一个心情，让我为你唱歌</div>
+  <div class="title">🎶 心情点歌台</div>
+  <div class="subtitle">选一个心情，让紫祺为你唱歌</div>
 
   <!-- 舞台区：泡泡和播放面板共享位置 -->
   <div class="stage">
@@ -369,7 +384,7 @@
     </div>
     <div class="song-name" id="songName"></div>
     <div class="whisper-box" id="whisper"></div>
-    <button class="rewind-btn" id="rewindBtn" title="倒带返回">⏪</button>
+    <div class="rewind-hint" id="rewindHint">按住唱片倒带，回到心情泡泡</div>
   </div>
   </div><!-- /stage -->
 
@@ -537,7 +552,7 @@
   var disc        = document.getElementById("disc");
   var songNameEl  = document.getElementById("songName");
   var whisperEl   = document.getElementById("whisper");
-  var rewindBtn   = document.getElementById("rewindBtn");
+  var rewindHint  = document.getElementById("rewindHint");
   var audio       = document.getElementById("audio");
 
   var currentAudioSrc = null;
@@ -648,27 +663,58 @@
     });
   });
 
-  /* ========== 倒带返回泡泡界面 ========== */
-  rewindBtn.addEventListener("click", function() {
-    if (isTransitioning) return;
-    isTransitioning = true;
+  /* ========== 按住唱片倒带 ========== */
+  var rewindTimer = null;
+  var isRewinding = false;
 
-    // 停止播放
-    stopAndReset();
-    songNameEl.textContent = "";
-    whisperEl.classList.remove("show");
-    whisperEl.textContent = "";
+  disc.addEventListener("pointerdown", function(e) {
+    if (isTransitioning || !playerPanel.classList.contains("revealed")) return;
+    e.preventDefault();
 
-    // 隐藏播放面板
-    playerPanel.classList.remove("revealed");
+    // 开始倒转
+    disc.classList.add("rewinding");
+    rewindHint.style.opacity = "1";
 
-    // 等面板淡出后再重置泡泡
-    setTimeout(function() {
-      var allBtns = moodGrid.querySelectorAll(".mood-btn");
-      allBtns.forEach(function(b) { b.classList.remove("active", "shattering", "expanding"); });
-      moodGrid.classList.remove("fading");
-      isTransitioning = false;
-    }, 700);
+    rewindTimer = setTimeout(function() {
+      isRewinding = true;
+      // 面板开始淡出
+      playerPanel.classList.add("rewinding");
+      stopAndReset();
+      songNameEl.textContent = "";
+      whisperEl.classList.remove("show");
+      whisperEl.textContent = "";
+      isTransitioning = true;
+
+      // 淡出完成后重置泡泡
+      setTimeout(function() {
+        playerPanel.classList.remove("revealed", "rewinding");
+        disc.classList.remove("rewinding");
+        var allBtns = moodGrid.querySelectorAll(".mood-btn");
+        allBtns.forEach(function(b) { b.classList.remove("active", "shattering", "expanding"); });
+        moodGrid.classList.remove("fading");
+        isTransitioning = false;
+        isRewinding = false;
+        rewindHint.style.opacity = "";
+      }, 900);
+    }, 500);
+  });
+
+  disc.addEventListener("pointerup", function(e) {
+    e.preventDefault();
+    clearTimeout(rewindTimer);
+    if (!isRewinding) {
+      // 没按住够久，取消倒转
+      disc.classList.remove("rewinding");
+      rewindHint.style.opacity = "";
+    }
+  });
+
+  disc.addEventListener("pointerleave", function(e) {
+    clearTimeout(rewindTimer);
+    if (!isRewinding) {
+      disc.classList.remove("rewinding");
+      rewindHint.style.opacity = "";
+    }
   });
 
   /* ========== 首次遮罩 ========== */
