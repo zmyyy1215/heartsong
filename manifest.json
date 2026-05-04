@@ -1,0 +1,18 @@
+{
+  "name": "心情点歌台",
+  "short_name": "点歌台",
+  "description": "选一个心情，让紫祺为你唱歌",
+  "start_url": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#d4b8e8",
+  "theme_color": "#c9a7eb",
+  "icons": [
+    {
+      "src": "/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
