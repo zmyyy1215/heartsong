@@ -1,6 +1,17 @@
-const CACHE_NAME = 'heartsong-v1';
+const CACHE_NAME = 'heartsong-v2';
+
+// 核心文件：install 时即刻缓存，保证离线冷启动
+const PRECACHE = [
+  '/heartsong/',
+  '/heartsong/index.html',
+  '/heartsong/manifest.json',
+  '/heartsong/icon.svg',
+];
 
 self.addEventListener('install', event => {
+  event.waitUntil(
+    caches.open(CACHE_NAME).then(cache => cache.addAll(PRECACHE))
+  );
   self.skipWaiting();
 });
 
