@@ -483,7 +483,7 @@ if (navigator.storage && navigator.storage.persist) {
   // 快速检查缓存（不阻塞）
   async function checkCached() {
     try {
-      var cache = await caches.open('heartsong-v1');
+      var cache = await caches.open('heartsong-v2');
       var allSongs = collectAllSongs();
       if (allSongs.length === 0) return 0;
       var cached = 0;
@@ -499,7 +499,7 @@ if (navigator.storage && navigator.storage.persist) {
 
   async function preloadAllSongs() {
     try {
-      var cache = await caches.open('heartsong-v1');
+      var cache = await caches.open('heartsong-v2');
       var allSongs = collectAllSongs();
       if (allSongs.length === 0) { showReady(); return; }
 
